@@ -301,8 +301,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-/WPFPolygon
-/ConsolePolygon
 
 # Cake - Uncomment if you are using it
 # tools/**
@@ -340,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+*/WPFPolygon
+*/ConsolePolygon
