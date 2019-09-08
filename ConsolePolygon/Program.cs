@@ -11,7 +11,7 @@ namespace ConsolePolygon
         {
             //SimpleDBTest();
             //AdvancedDBTest();
-            HardDBTest();
+            //HardDBTest();
         }
 
         private static void SimpleDBTest()
