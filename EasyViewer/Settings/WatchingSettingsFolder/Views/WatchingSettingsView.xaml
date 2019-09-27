@@ -1,0 +1,949 @@
+﻿<UserControl
+    x:Class="EasyViewer.Settings.WatchingSettingsFolder.Views.WatchingSettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    cal:Bind.AtDesignTime="True"
+    d:DataContext="{d:DesignData Source=../DesignData/WatchingSettingsViewDesignData.xaml}"
+    d:DesignHeight="650"
+    d:DesignWidth="800"
+    Focusable="True"
+    mc:Ignorable="d">
+    <ScrollViewer
+        Background="{StaticResource GrayBrush10}"
+        CanContentScroll="True"
+        VerticalScrollBarVisibility="Visible">
+        <Grid Background="{StaticResource GrayBrush10}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--#region Row 0 Эпизоды по умолчанию-->
+            <Grid
+                Grid.Row="0"
+                Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="10,10,5,7.5"
+                    HorizontalAlignment="Right"
+                    FontSize="18"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="Число просматриваемых эпизодов по умолчанию: " />
+                <!--  Количество эпизодов по умолчанию  -->
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    MinWidth="75"
+                    Margin="5,10,5,7.5"
+                    HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Center"
+                    cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                    Foreground="Aqua"
+                    Style="{StaticResource SETBoxDefaultStyle}"
+                    Text="{Binding WatchingSettings.DefaultEpCount, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" />
+                <!--  Общее время текущего количества эпизодов по умолчанию  -->
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Margin="15,10,5,7.5"
+                    HorizontalAlignment="Left"
+                    FontSize="18"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}~{0:dd\:hh\:mm\:ss}">
+                            <Binding Path="DefaultEpisodesActualDuration" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <Grid
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Margin="10,0,0,0"
+                        FontSize="18"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Число доступных эпизодов: " />
+                    <!--  Количество доступных к просмотру эпизодов  -->
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0,0,5,0"
+                        FontSize="18"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="{Binding CheckedEpisodes.Count}" />
+                </Grid>
+            </Grid>
+
+            <!--#endregion-->
+
+            <!--#region Row 1 Интеллектуальное выключение-->
+            <Grid
+                Grid.Row="1"
+                Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    Margin="10,7.5,5,7.5"
+                    HorizontalAlignment="Right"
+                    FontSize="18"
+                    Foreground="OrangeRed"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="Интелектуальное выключение компьютера: " />
+                <!--  Флаг интеллектуального выключения  -->
+                <controls:ToggleSwitchButton
+                    Grid.Column="1"
+                    Margin="5,7.5"
+                    HorizontalAlignment="Left"
+                    cal:Message.Attach="[Event Checked]=[Action CheckedStatusChanged()];[Event Unchecked]=[Action CheckedStatusChanged()]"
+                    IsChecked="{Binding WatchingSettings.NightHelperShutdown}"
+                    OffSwitchBrush="Tomato"
+                    OnSwitchBrush="LawnGreen"
+                    ThumbIndicatorWidth="18" />
+                <!--  Статус интеллектуального выключения  -->
+                <TextBlock
+                    Grid.Column="2"
+                    Margin="20,0,0,0"
+                    FontSize="18">
+                    <TextBlock.Style>
+                        <Style
+                            BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                            TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.NightHelperShutdown}"
+                                    Value="True">
+                                    <Setter Property="Text" Value="Активировано" />
+                                    <Setter Property="Foreground" Value="LawnGreen" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.NightHelperShutdown}"
+                                    Value="False">
+                                    <Setter Property="Text" Value="Дезактивировано" />
+                                    <Setter Property="Foreground" Value="Tomato" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <!--#endregion-->
+
+            <!--#region Row 2 Значения интеллектуального выключения-->
+            <Grid
+                Grid.Row="2"
+                Grid.Column="0"
+                Visibility="{Binding NightHelperSettingsVisibility}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Margin="0,5,0,2.5"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="OrangeRed"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Активировать выключение компьютера с " />
+                    <!--  Начальное время интеллектуального выключения  -->
+                    <TextBox
+                        MinWidth="30"
+                        HorizontalContentAlignment="Center"
+                        cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                        Foreground="Aqua"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding WatchingSettings.NightHelperStartTime, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" />
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="OrangeRed"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text=":00 по " />
+                    <!--  Конечное время интеллектуального выключения  -->
+                    <TextBox
+                        MinWidth="30"
+                        HorizontalContentAlignment="Center"
+                        cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                        Foreground="Aqua"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding WatchingSettings.NightHelperEndTime, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" />
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="OrangeRed"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text=":00 часов," />
+                </StackPanel>
+                <StackPanel
+                    Grid.Row="1"
+                    Margin="0,2.5,0,5"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="OrangeRed"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="после окончания просмотра всех эпизодов." />
+                </StackPanel>
+
+                <!--#region Примечание интеллектуального выключения-->
+                <!--  Сворачивание/разворачивание примечаний  -->
+                <Button
+                    Grid.Row="1"
+                    HorizontalAlignment="Left"
+                    cal:Message.Attach="[Event Click]=[Action ExpandCollapseNightHelperShutdownRemark()]">
+                    <Button.Style>
+                        <Style
+                            BasedOn="{StaticResource MetroButton}"
+                            TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsNightHelperShutdownRemarkExpand}"
+                                    Value="True">
+                                    <Setter Property="ToolTip" Value="Свернуть примечания" />
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <iconPacks:PackIconEntypo
+                                                Width="25"
+                                                Height="15"
+                                                Foreground="OrangeRed"
+                                                Kind="ChevronUp" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding IsNightHelperShutdownRemarkExpand}"
+                                    Value="False">
+                                    <Setter Property="ToolTip" Value="Развернуть примечания" />
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <iconPacks:PackIconEntypo
+                                                Width="25"
+                                                Height="15"
+                                                Foreground="OrangeRed"
+                                                Kind="ChevronDown" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <!--  Примечания  -->
+                <StackPanel
+                    Grid.Row="2"
+                    Orientation="Vertical"
+                    Visibility="{Binding NightHelperShutdownRemarkVisibility}">
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        FontSize="16"
+                        Foreground="YellowGreen"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="1 примечание: 2 часа ночи меньше 23 часов вечера, 23:59 больше чем 0:01."
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        FontSize="16"
+                        Foreground="YellowGreen"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="    1-й Пример: время с 22 по 6 - компьютер выключится между 22 часами вечера и 6 часами утра."
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        FontSize="16"
+                        Foreground="YellowGreen"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="    2-й Пример Время с 1 по 2 - если просмотр закончится между этим временем, компьютер выключится. Если просмотр закончится в 3 часа ночи, то компьютер не выключится."
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        FontSize="16"
+                        Foreground="YellowGreen"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="2 примечание: компьютер не выключится сразу при достижении указанных границ, а лишь включит функцию выключения, то есть компьютер выключится только если будут просмотрены все указанные эпизоды."
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        FontSize="16"
+                        Foreground="YellowGreen"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="3 примечание: Интелектуальное выключение не мешает работе функции выключения компьютера, а лишь дополняет её. Ничего ужасного не случится, если вы активируете выключение вручную."
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        FontSize="16"
+                        Foreground="YellowGreen"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="4 примечание: Добавление/удаление эпизодов из очереди не мешает работе интеллектуального выключения"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!--#endregion-->
+
+            </Grid>
+
+            <!--#endregion-->
+
+            <!--#region Row 3 Режим просмотра-->
+
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Margin="10,0,0,0"
+                    FontSize="18"
+                    Foreground="Yellow"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="Режим просмотра: " />
+
+                <!--#region Случайный порядок-->
+
+                <!--  RadioButton  -->
+                <StackPanel
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <RadioButton
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        cal:Message.Attach="[Event Checked]=[Action CheckedStatusChanged()];[Event Unchecked]=[Action CheckedStatusChanged()]"
+                        GroupName="Watching"
+                        IsChecked="{Binding WatchingSettings.RandomWatching}" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        FontSize="18"
+                        Text="В случайном порядке">
+                        <TextBlock.Style>
+                            <Style
+                                BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                                TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding WatchingSettings.RandomWatching}"
+                                        Value="True">
+                                        <Setter Property="Foreground" Value="LawnGreen" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding WatchingSettings.RandomWatching}"
+                                        Value="False">
+                                        <Setter Property="Foreground" Value="Tomato" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+                <!--  Значения  -->
+                <StackPanel
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="2"
+                    Orientation="Horizontal"
+                    Visibility="{Binding RandomEnabledVisibility}">
+                    <StackPanel
+                        Margin="10,0"
+                        Orientation="Vertical">
+                        <TextBlock
+                            FontSize="18"
+                            Foreground="Yellow"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="Количество смешиваний:" />
+                        <StackPanel Orientation="Horizontal">
+                            <controls:ToggleSwitchButton
+                                cal:Message.Attach="[Event Checked]=[Action CheckedStatusChanged()];[Event Unchecked]=[Action CheckedStatusChanged()]"
+                                IsChecked="{Binding WatchingSettings.IsEpisodeChainActive}"
+                                OffSwitchBrush="Tomato"
+                                OnSwitchBrush="LawnGreen" />
+                            <TextBlock
+                                FontSize="18"
+                                Text="Цепочка эпизодов">
+                                <TextBlock.Style>
+                                    <Style
+                                        BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                                        TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding WatchingSettings.IsEpisodeChainActive}"
+                                                Value="True">
+                                                <Setter Property="Foreground" Value="LawnGreen" />
+                                            </DataTrigger>
+                                            <DataTrigger
+                                                Binding="{Binding WatchingSettings.IsEpisodeChainActive}"
+                                                Value="False">
+                                                <Setter Property="Foreground" Value="Tomato" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+
+
+                    </StackPanel>
+                    <TextBox
+                        MinWidth="50"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                        FontSize="30"
+                        Foreground="Aqua"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding WatchingSettings.RandomMixCount, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" />
+                </StackPanel>
+                <!--#endregion-->
+
+                <!--#region По порядку (подряд)-->
+
+                <!--  RadioButton  -->
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <RadioButton
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        cal:Message.Attach="[Event Checked]=[Action CheckedStatusChanged()];[Event Unchecked]=[Action CheckedStatusChanged()]"
+                        GroupName="Watching"
+                        IsChecked="{Binding WatchingSettings.WatchingInRow}" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        FontSize="18"
+                        Text="Смотреть подряд">
+                        <TextBlock.Style>
+                            <Style
+                                BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                                TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding WatchingSettings.WatchingInRow}"
+                                        Value="True">
+                                        <Setter Property="Foreground" Value="LawnGreen" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding WatchingSettings.WatchingInRow}"
+                                        Value="False">
+                                        <Setter Property="Foreground" Value="Tomato" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+                <!--  Значения  -->
+                <Grid
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="2"
+                    Margin="10,0,0,0"
+                    Visibility="{Binding WatchingInRowVisibility}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        HorizontalAlignment="Right"
+                        FontSize="18"
+                        Foreground="Yellow"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Номер начального эпизода:" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        Margin="10,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                        FontFamily="Comic Sans MS"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Foreground="Aqua"
+                        Text="{Binding WatchingSettings.LastWatchedEpInRow, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        FontSize="18"
+                        Foreground="Yellow"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Формат: № сезона * 100 + № эпизода" />
+                </Grid>
+
+                <!--#endregion-->
+
+
+
+
+
+
+
+            </Grid>
+
+            <!--#endregion-->
+
+            <StackPanel
+                Grid.Row="4"
+                Orientation="Vertical"
+                Visibility="{Binding WatchingSettings.WatchingInRowVisibility}">
+                <TextBlock
+                    FontSize="18"
+                    Foreground="Chocolate"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="Внимание, введенные данные не проверяются. Будьте внимательны." />
+                <TextBlock
+                    FontSize="18"
+                    Foreground="Chocolate"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="1 сезон, 9 серия - это номер 109 (1 * 100 + 9 = 109)." />
+            </StackPanel>
+
+            <Grid
+                Grid.Row="4"
+                Margin="10,5"
+                Visibility="{Binding WatchingSettings.RandomEnabledVisibility}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    FontSize="18"
+                    Foreground="Chocolate">
+                    <TextBlock.Style>
+                        <Style
+                            BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                            TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="никогда">
+                                    <Setter Property="Text" Value="Я " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="лет">
+                                    <Setter Property="Text" Value="Минимальное количество " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="месяцев">
+                                    <Setter Property="Text" Value="Минимальное количество " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="недель">
+                                    <Setter Property="Text" Value="Минимальное количество " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="дней">
+                                    <Setter Property="Text" Value="Минимальное количество " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="часов">
+                                    <Setter Property="Text" Value="Минимальное количество " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="всегда">
+                                    <Setter Property="Text" Value="Я " />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <ComboBox
+                    Grid.Column="1"
+                    MaxWidth="110"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    cal:Message.Attach="[Event SelectionChanged]=[Action SelectionChanged()]"
+                    FontFamily="Comic Sans MS"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="Aqua"
+                    ItemsSource="{Binding WatchingSettings.NoneRepeatTimeTypeList}"
+                    SelectedItem="{Binding WatchingSettings.SelectedNoneRepeatTimeType}" />
+                <TextBlock
+                    Grid.Column="2"
+                    FontSize="18"
+                    Foreground="Chocolate">
+                    <TextBlock.Style>
+                        <Style
+                            BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                            TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="никогда">
+                                    <Setter Property="Text" Value=" не хочу видеть повторяющиеся эпизоды." />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="лет">
+                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="месяцев">
+                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="недель">
+                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="дней">
+                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="часов">
+                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="всегда">
+                                    <Setter Property="Text" Value=" хочу видеть повторяющиеся эпизоды." />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBox
+                    Grid.Column="3"
+                    MinWidth="45"
+                    Margin="10,0"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                    FontFamily="Comic Sans MS"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="Aqua"
+                    Text="{Binding WatchingSettings.NoneRepeatTimeCount, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                    <TextBox.Style>
+                        <Style
+                            BasedOn="{StaticResource MetroTextBox}"
+                            TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="никогда">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="лет">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="месяцев">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="недель">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="дней">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="часов">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Value="всегда">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+            <Grid Grid.Row="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Margin="10,0,0,0"
+                    cal:Message.Attach="[Event Click]=[Action ResetLastDateViewed()]"
+                    BorderThickness="3">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="DarkCyan"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Сбросить" />
+                </Button>
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="10,0,0,0"
+                    FontSize="18"
+                    Foreground="DarkCyan"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="дату последнего просмотра у" />
+                <TextBlock
+                    Grid.Column="2"
+                    FontSize="18"
+                    Foreground="DarkCyan">
+                    <TextBlock.Style>
+                        <Style
+                            BasedOn="{StaticResource SEDefaultTBlockStyle}"
+                            TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsSelectedAllFilmsToReset}"
+                                    Value="True">
+                                    <Setter Property="Text" Value=" " />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding IsSelectedAllFilmsToReset}"
+                                    Value="False">
+                                    <Setter Property="Text" Value=" фильма " />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <ComboBox
+                    Grid.Column="3"
+                    MinWidth="200"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    FontFamily="Comic Sans MS"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="Aqua"
+                    ItemsSource="{Binding Films}"
+                    SelectedIndex="1"
+                    SelectedItem="{Binding SelectedGlobalResetFilm}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                FontFamily="Comic Sans MS"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="Aqua"
+                                Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+            <StackPanel
+                Grid.Row="6"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Margin="10"
+                    Padding="10"
+                    cal:Message.Attach="[Event Click]=[Action ExportSettingsToFile()]"
+                    BorderThickness="3"
+                    Visibility="Hidden">
+                    <StackPanel Orientation="Vertical">
+                        <iconPacks:PackIconFontAwesome
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="CornflowerBlue"
+                            Kind="FileExportSolid" />
+                        <TextBlock
+                            Foreground="CornflowerBlue"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="Сохранить" />
+                        <TextBlock
+                            Foreground="CornflowerBlue"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="в файл" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Margin="10"
+                    Padding="10"
+                    cal:Message.Attach="[Event Click]=[Action ImportSettingsFromFile()]"
+                    BorderThickness="3"
+                    Visibility="Hidden">
+                    <StackPanel Orientation="Vertical">
+                        <iconPacks:PackIconFontAwesome
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="Goldenrod"
+                            Kind="FileImportSolid" />
+                        <TextBlock
+                            Foreground="Goldenrod"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="Загрузить" />
+                        <TextBlock
+                            Foreground="Goldenrod"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="из файла" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Margin="10"
+                    Padding="10"
+                    cal:Message.Attach="[Event Click]=[Action SetDefaultValues()]"
+                    BorderThickness="3">
+                    <StackPanel Orientation="Vertical">
+                        <iconPacks:PackIconFontAwesome
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="Yellow"
+                            Kind="ReplySolid" />
+                        <TextBlock
+                            Foreground="Yellow"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="Вернуть" />
+                        <TextBlock
+                            Foreground="Yellow"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="по умолчанию" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Margin="10"
+                    Padding="10"
+                    cal:Message.Attach="[Event Click]=[Action CancelChanges()]"
+                    BorderThickness="3">
+                    <StackPanel Orientation="Vertical">
+                        <iconPacks:PackIconFontAwesome
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="Tomato"
+                            Kind="BanSolid" />
+                        <TextBlock
+                            Foreground="Tomato"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="Отменить" />
+                        <TextBlock
+                            Foreground="Tomato"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="изменения" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Margin="10"
+                    Padding="10"
+                    cal:Message.Attach="[Event Click]=[Action SaveChanges()]"
+                    BorderThickness="3">
+                    <StackPanel Orientation="Vertical">
+                        <iconPacks:PackIconFontAwesome
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="LawnGreen"
+                            Kind="CheckCircleRegular" />
+                        <TextBlock
+                            Foreground="LawnGreen"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="Сохранить" />
+                        <TextBlock
+                            Foreground="LawnGreen"
+                            Style="{StaticResource SEDefaultTBlockStyle}"
+                            Text="изменения" />
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

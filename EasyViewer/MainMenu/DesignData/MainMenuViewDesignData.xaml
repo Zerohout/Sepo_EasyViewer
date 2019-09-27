@@ -1,0 +1,21 @@
+﻿<vms:MainMenuViewModel
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vms="clr-namespace:EasyViewer.MainMenu.ViewModels"
+    xmlns:var="clr-namespace:EasyViewer.Helpers"
+    xmlns:setModels="clr-namespace:EasyViewer.Models.SettingModels"
+    xmlns:filmModels="clr-namespace:EasyViewer.Models.FilmModels"
+    Background="../../Resources/Images/HDMMBackground.png"
+    Opacity="1">
+    <vms:MainMenuViewModel.Films>
+        <filmModels:Film Name="Южный парк" />
+        <filmModels:Film Name="Гриффины" />
+        <filmModels:Film Name="Симпсоны" />
+        <filmModels:Film Name="Американский папаша" />
+        <filmModels:Film Name="Спанч Боб" />
+        <filmModels:Film Name="Футурама" />
+        <filmModels:Film Name="Удивительный мир Гамбола" />
+    </vms:MainMenuViewModel.Films>
+    
+
+    </vms:MainMenuViewModel>

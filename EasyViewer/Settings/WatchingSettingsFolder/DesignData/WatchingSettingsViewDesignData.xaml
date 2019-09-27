@@ -1,0 +1,21 @@
+﻿<vms:WatchingSettingsViewModel
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:settingsModels="clr-namespace:EasyViewer.Models.SettingModels"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:viewModels="clr-namespace:EasyViewer.Settings.WatchingSettingsFolder.ViewModels"
+    xmlns:vms="clr-namespace:EasyViewer.Settings.WatchingSettingsFolder.ViewModels">
+    <vms:WatchingSettingsViewModel.WatchingSettings>
+        <settingsModels:WatchingSettings
+            DefaultEpCount="10"
+            LastWatchedEpInRow="901"
+            NightHelperEndTime="4"
+            NightHelperShutdown="False"
+            NightHelperStartTime="23"
+            RandomMixCount="3"
+            RandomWatching="True"
+            WatchingInRow="False" />
+    </vms:WatchingSettingsViewModel.WatchingSettings>
+
+
+</vms:WatchingSettingsViewModel>

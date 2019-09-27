@@ -1,0 +1,42 @@
+﻿<viewModels:ViewingsSettingsViewModel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vms="clr-namespace:EasyViewer.Settings.ViewingsSettingsFolder.ViewModels"
+                    xmlns:EasyViewer="clr-namespace:EasyViewer"
+                    xmlns:viewModels="clr-namespace:EasyViewer.Settings.ViewingsSettingsFolder.ViewModels"
+                    xmlns:filmModels="clr-namespace:EasyViewer.Models.FilmModels"
+                    IsDesignTime="True">
+
+    <viewModels:ViewingsSettingsViewModel.Films>
+        <filmModels:Film Name="фильм_1"/>
+        <filmModels:Film Name="фильм_2"/>
+        <filmModels:Film Name="фильм_3"/>
+        <filmModels:Film Name="фильм_4"/>
+        <filmModels:Film Name="фильм_5"/>
+        <filmModels:Film Name="фильм_6"/>
+        <filmModels:Film Name="фильм_7"/>
+        <filmModels:Film Name="фильм_8"/>
+        <filmModels:Film Name="фильм_9"/>
+        <filmModels:Film Name="фильм_10"/>
+    </viewModels:ViewingsSettingsViewModel.Films>
+    <viewModels:ViewingsSettingsViewModel.SelectedFilm>
+        <filmModels:Film Name="фильм_1"/>
+    </viewModels:ViewingsSettingsViewModel.SelectedFilm>
+
+    <viewModels:ViewingsSettingsViewModel.Seasons>
+        <filmModels:Season Number="1" Checked="True"/>
+        <filmModels:Season Number="2" Checked="False"/>
+        <filmModels:Season Number="3" Checked="True"/>
+        <filmModels:Season Number="4" Checked="False"/>
+        <filmModels:Season Number="5" Checked="True"/>
+        <filmModels:Season Number="6" Checked="False"/>
+        <filmModels:Season Number="7" Checked="True"/>
+        <filmModels:Season Number="8" Checked="False"/>
+        <filmModels:Season Number="9" Checked="True"/>
+        <filmModels:Season Number="10" Checked="False"/>
+    </viewModels:ViewingsSettingsViewModel.Seasons>
+    <viewModels:ViewingsSettingsViewModel.SelectedSeason>
+        <filmModels:Season Number="1"/>
+    </viewModels:ViewingsSettingsViewModel.SelectedSeason>
+
+    
+</viewModels:ViewingsSettingsViewModel>
