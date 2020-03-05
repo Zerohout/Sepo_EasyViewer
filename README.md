@@ -38,10 +38,10 @@ Program for viewing cartoons from PC with many features:<br/>
 --Функция цепных эпизодов для просмотра связанных серий (дилогии, трилогии и т.д.)<br/>
 -Последовательный просмотр с запоминанием последнего просмотренного эпизода и установкой начального эпизода<br/>
 
-Using tecnologes/Используемые технологии:
--C# WPF
--VLC.DotNet
--Caliburn.Micro
--LiteDB
--MahApps
--Newtonsoft.Json
+Using tecnologes/Используемые технологии:<br/>
+-C# WPF<br/>
+-VLC.DotNet<br/>
+-Caliburn.Micro<br/>
+-LiteDB<br/>
+-MahApps<br/>
+-Newtonsoft.Json<br/>
