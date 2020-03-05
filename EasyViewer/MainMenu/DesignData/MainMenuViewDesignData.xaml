@@ -6,7 +6,8 @@
     xmlns:setModels="clr-namespace:EasyViewer.Models.SettingModels"
     xmlns:filmModels="clr-namespace:EasyViewer.Models.FilmModels"
     Background="../../Resources/Images/HDMMBackground.png"
-    Opacity="1">
+    Opacity="1"
+    SecretVisibility="Visible">
     <vms:MainMenuViewModel.Films>
         <filmModels:Film Name="Южный парк" />
         <filmModels:Film Name="Гриффины" />

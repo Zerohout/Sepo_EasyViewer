@@ -22,7 +22,7 @@ namespace EasyViewer.Models.FilmModels
         /// </summary>
         public TimeSpan EndTime { get; set; }
         /// <summary>
-        /// Длительность джаспера
+        /// Длительность джампера
         /// </summary>
         public TimeSpan Duration => EndTime - StartTime;
         /// <summary>

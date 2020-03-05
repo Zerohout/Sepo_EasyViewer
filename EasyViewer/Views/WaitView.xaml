@@ -6,29 +6,31 @@
     xmlns:local="clr-namespace:EasyViewer.Views"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cal="http://www.caliburnproject.org"
     Title="WaitView"
     Width="300"
-    Height="150"
-    AllowDrop="False"
+    Height="200"
+    AllowDrop="True"
     Background="{StaticResource GrayBrush10}"
-    IsEnabled="False"
+    cal:Bind.AtDesignTime="True"
+    d:DataContext="{d:DesignData Source=DesignData/WaitViewDesignData.xaml}"
     ResizeMode="NoResize"
-    Topmost="True"
     UseNoneWindowStyle="True"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -37,24 +39,57 @@
             <TextBlock
                 Grid.Row="0"
                 Style="{StaticResource DefaultTBlockStyle}"
-                Text="Ожидайте" />
-            <TextBlock
-                Grid.Row="1"
-                Style="{StaticResource DefaultTBlockStyle}">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="{}Осталось: {0:00}:{1:00}:{2:00}">
-                        <Binding
-                            Path="RemainingTime.Hours"
-                            UpdateSourceTrigger="PropertyChanged" />
-                        <Binding
-                            Path="RemainingTime.Minutes"
-                            UpdateSourceTrigger="PropertyChanged" />
-                        <Binding
-                            Path="RemainingTime.Seconds"
-                            UpdateSourceTrigger="PropertyChanged" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
+                Foreground="BlanchedAlmond"
+                Text="Ожидайте завершения" />
+            <Grid Grid.Column="0"
+                  Grid.Row="1"
+                  VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    FontSize="16"
+                    Foreground="DarkGray"
+                    Style="{StaticResource DefaultTBlockStyle}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Осталось: {0:00}:{1:00}:{2:00}">
+                            <Binding
+                                Path="RemainingTime.Hours"
+                                UpdateSourceTrigger="PropertyChanged" />
+                            <Binding
+                                Path="RemainingTime.Minutes"
+                                UpdateSourceTrigger="PropertyChanged" />
+                            <Binding
+                                Path="RemainingTime.Seconds"
+                                UpdateSourceTrigger="PropertyChanged" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock
+                    Grid.Row="1"
+                    FontSize="16"
+                    Foreground="DarkGray"
+                    Style="{StaticResource DefaultTBlockStyle}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Прошло: {0:00}:{1:00}:{2:00}">
+                            <Binding
+                                Path="ElapsedTime.Hours"
+                                UpdateSourceTrigger="PropertyChanged" />
+                            <Binding
+                                Path="ElapsedTime.Minutes"
+                                UpdateSourceTrigger="PropertyChanged" />
+                            <Binding
+                                Path="ElapsedTime.Seconds"
+                                UpdateSourceTrigger="PropertyChanged" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
         </Grid>
 
         <mah:MetroProgressBar
@@ -64,22 +99,69 @@
             Maximum="{Binding MaximumValue, UpdateSourceTrigger=PropertyChanged}"
             Minimum="0"
             Value="{Binding CurrentValue, UpdateSourceTrigger=PropertyChanged}" />
-        <TextBlock
-            Grid.Row="1"
-            Style="{StaticResource DefaultTBlockStyle}">
-            <TextBlock.Text>
-                <MultiBinding StringFormat="{}{0}/{1} ({2}%)">
-                    <Binding
-                        Path="CurrentValue"
-                        UpdateSourceTrigger="PropertyChanged" />
-                    <Binding
-                        Path="MaximumValue"
-                        UpdateSourceTrigger="PropertyChanged" />
-                    <Binding
-                        Path="Procents"
-                        UpdateSourceTrigger="PropertyChanged" />
-                </MultiBinding>
-            </TextBlock.Text>
-        </TextBlock>
+        <Grid Grid.Row="1" VerticalAlignment="Center">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       FontSize="18"
+                       Style="{StaticResource DefaultTBlockStyle}">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}Эпизод {0}/{1}">
+                        <Binding
+                            Path="CurrentValue"
+                            UpdateSourceTrigger="PropertyChanged" />
+                        <Binding
+                            Path="MaximumValue"
+                            UpdateSourceTrigger="PropertyChanged" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                FontSize="18"
+                Style="{StaticResource DefaultTBlockStyle}">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}Адрес {0}/{1}">
+                        <Binding
+                            Path="CurrentAddressNumber"
+                            UpdateSourceTrigger="PropertyChanged" />
+                        <Binding
+                            Path="MaxAddressNumber"
+                            UpdateSourceTrigger="PropertyChanged" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="1"
+                FontSize="18"
+                Text="Завершено на"
+                Style="{StaticResource DefaultTBlockStyle}"/>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                FontSize="18"
+                Style="{StaticResource DefaultTBlockStyle}">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}%">
+                        <Binding
+                            Path="CurrentValue"
+                            UpdateSourceTrigger="PropertyChanged" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </Grid>
+<Button Grid.Row="2"
+        Content="Отмена операции"
+        cal:Message.Attach="[Event Click]=[Action CancelOperation()]"></Button>
     </Grid>
 </mah:MetroWindow>

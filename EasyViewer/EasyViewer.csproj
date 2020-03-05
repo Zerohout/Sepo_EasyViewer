@@ -109,9 +109,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\Creator.cs" />
+    <Compile Include="Helpers\Creators\CreatorMethods.cs" />
+    <Compile Include="Helpers\Creators\SouthPark\SPFreehat.cs" />
     <Compile Include="Helpers\GlobalMethods.cs" />
     <Compile Include="Helpers\HotkeyRegistrator.cs" />
-    <Compile Include="Helpers\SPCreator.cs" />
+    <Compile Include="Helpers\Creators\SouthPark\SPCreator.cs" />
     <Compile Include="Helpers\SystemVariables.cs" />
     <Compile Include="Helpers\AppValues.cs" />
     <Compile Include="Helpers\Thing.cs" />
@@ -123,12 +125,18 @@
       <DependentUpon>MainMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\FilmModels\Episode.cs" />
-    <Compile Include="Models\FilmModels\EpisodeAddress.cs" />
+    <Compile Include="Models\FilmModels\EpAddress.cs" />
     <Compile Include="Models\FilmModels\Jumper.cs" />
     <Compile Include="Models\FilmModels\Season.cs" />
     <Compile Include="Models\FilmModels\Film.cs" />
     <Compile Include="Models\SettingModels\WatchingSettings.cs" />
     <Compile Include="Resources\Others\Needing.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\AddressEditing\AEEventsActions.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\AddressEditing\AEMethods.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\AddressEditing\AEPropFields.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodeEditing\EEditingMethods.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodeEditing\EEditingEventsActions.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodeEditing\EEditingPropFields.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\SeasonsEditing\SEEventsActions.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\SeasonsEditing\SEMethods.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\SeasonsEditing\SEPropFields.cs" />
@@ -138,18 +146,26 @@
     <Compile Include="Settings\FilmEditorFolder\Partials\EditorSelector\ESEventsActions.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\EditorSelector\ESMethods.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\EditorSelector\ESPropFields.cs" />
-    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodesEditing\EEEventsActions.cs" />
-    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodesEditing\EEMethods.cs" />
-    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodesEditing\EEPropFields.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodesEditor\EEditorEventsActions.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodesEditor\EEditorMethods.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Partials\EpisodesEditor\EEditorPropFields.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\VoiceOversEditing\VOEEventsActions.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\VoiceOversEditing\VOEMethods.cs" />
     <Compile Include="Settings\FilmEditorFolder\Partials\VoiceOversEditing\VOEPropFields.cs" />
+    <Compile Include="Settings\FilmEditorFolder\ViewModels\AddressEditingViewModel.cs" />
+    <Compile Include="Settings\FilmEditorFolder\ViewModels\EpisodeEditingViewModel.cs" />
     <Compile Include="Settings\FilmEditorFolder\ViewModels\SeasonsEditingViewModel.cs" />
     <Compile Include="Settings\FilmEditorFolder\ViewModels\FilmsEditingViewModel.cs" />
     <Compile Include="Settings\FilmEditorFolder\ViewModels\EditorSelectorViewModel.cs" />
-    <Compile Include="Settings\FilmEditorFolder\ViewModels\EpisodesEditingViewModel.cs" />
+    <Compile Include="Settings\FilmEditorFolder\ViewModels\EpisodesEditorViewModel.cs" />
     <Compile Include="Settings\FilmEditorFolder\ViewModels\ISettingsViewModel.cs" />
     <Compile Include="Settings\FilmEditorFolder\ViewModels\VoiceOversEditingViewModel.cs" />
+    <Compile Include="Settings\FilmEditorFolder\Views\AddressEditingView.xaml.cs">
+      <DependentUpon>AddressEditingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\FilmEditorFolder\Views\EpisodeEditingView.xaml.cs">
+      <DependentUpon>EpisodeEditingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\FilmEditorFolder\Views\SeasonsEditingView.xaml.cs">
       <DependentUpon>SeasonsEditingView.xaml</DependentUpon>
     </Compile>
@@ -159,8 +175,8 @@
     <Compile Include="Settings\FilmEditorFolder\Views\EditorSelectorView.xaml.cs">
       <DependentUpon>EditorSelectorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings\FilmEditorFolder\Views\EpisodesEditingView.xaml.cs">
-      <DependentUpon>EpisodesEditingView.xaml</DependentUpon>
+    <Compile Include="Settings\FilmEditorFolder\Views\EpisodesEditorView.xaml.cs">
+      <DependentUpon>EpisodesEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\FilmEditorFolder\Views\VoiceOversEditingView.xaml.cs">
       <DependentUpon>VoiceOversEditingView.xaml</DependentUpon>
@@ -229,6 +245,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="Helpers\Creators\SouthPark\SPOnline.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -255,6 +272,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Settings\FilmEditorFolder\DesignData\AddressEditingViewDesignData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Settings\FilmEditorFolder\DesignData\FilmsEditingViewDesignData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -263,7 +284,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Settings\FilmEditorFolder\DesignData\EpisodesEditingViewDesignData.xaml">
+    <Page Include="Settings\FilmEditorFolder\DesignData\EpisodesEditorViewDesignData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -274,6 +295,14 @@
     <Page Include="Settings\FilmEditorFolder\DesignData\VoiceOversEditingViewDesignData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Settings\FilmEditorFolder\Views\AddressEditingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Settings\FilmEditorFolder\Views\EpisodeEditingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Settings\FilmEditorFolder\Views\SeasonsEditingView.xaml">
       <SubType>Designer</SubType>
@@ -287,7 +316,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Settings\FilmEditorFolder\Views\EpisodesEditingView.xaml">
+    <Page Include="Settings\FilmEditorFolder\Views\EpisodesEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -324,6 +353,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DesignData\VideoPlayerViewDesignData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DesignData\WaitViewDesignData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -382,12 +415,20 @@
     <Folder Include="Settings\SettingsFolder\Partials\Settings\" />
     <Folder Include="Settings\WatchingSettingsFolder\Partials\GeneralSettings\" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\VideoPlayerButtons\FastForwardLeft.png" />
+    <Resource Include="Resources\Images\VideoPlayerButtons\FastForwardLeftMouseOn.png" />
+    <Resource Include="Resources\Images\VideoPlayerButtons\FastForwardLeftPressed.png" />
+    <Resource Include="Resources\Images\VideoPlayerButtons\FastForwardRigth.png" />
+    <Resource Include="Resources\Images\VideoPlayerButtons\FastForwardRigthMouseOn.png" />
+    <Resource Include="Resources\Images\VideoPlayerButtons\FastForwardRigthPressed.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\VideoLAN.LibVLC.Windows.3.0.8\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.8\build\VideoLAN.LibVLC.Windows.targets')" />
+  <Import Project="..\packages\VideoLAN.LibVLC.Windows.3.0.8.1\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.8.1\build\VideoLAN.LibVLC.Windows.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.8\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VideoLAN.LibVLC.Windows.3.0.8\build\VideoLAN.LibVLC.Windows.targets'))" />
+    <Error Condition="!Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.8.1\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VideoLAN.LibVLC.Windows.3.0.8.1\build\VideoLAN.LibVLC.Windows.targets'))" />
   </Target>
 </Project>

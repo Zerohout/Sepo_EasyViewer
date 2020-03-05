@@ -6,7 +6,6 @@ namespace EasyViewer.MainMenu.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Windows;
-    using System.Windows.Threading;
     using Caliburn.Micro;
     using EasyViewer.ViewModels;
     using LiteDB;

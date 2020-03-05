@@ -134,7 +134,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style
-        x:Key="EditListFontAwesomelBtnIconStyle"
+        x:Key="EditListFontAwesomeBtnIconStyle"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Width" Value="20" />
         <Setter Property="Height" Value="16" />
@@ -160,7 +160,7 @@
     </Style>
     <Style
         x:Key="EditListCheckActionBtnIconStyle"
-        BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="LawnGreen" />
         <Setter Property="Kind" Value="CheckCircleRegular" />
@@ -182,7 +182,7 @@
     </Style>
     <Style
         x:Key="EditListUncheckActionBtnIconStyle"
-        BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="Tomato" />
         <Setter Property="Kind" Value="TimesCircleRegular" />
@@ -197,31 +197,38 @@
     </Style>
     <Style
         x:Key="EditListUnlockBtnIconStyle"
-        BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="Aqua" />
         <Setter Property="Kind" Value="UnlockAltSolid" />
     </Style>
     <Style
         x:Key="EditListSelectBtnIconStyle"
-        BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="Aqua" />
         <Setter Property="Kind" Value="HandPointerRegular" />
     </Style>
     <Style
-        x:Key="EditListDownBtnIconStyle"
+        x:Key="EditListMoveDownBtnIconStyle"
         BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
         TargetType="iconPacks:PackIconMaterial">
         <Setter Property="Foreground" Value="DodgerBlue" />
         <Setter Property="Kind" Value="ArrowDownBold" />
     </Style>
     <Style
-        x:Key="EditListUpBtnIconStyle"
+        x:Key="EditListMoveUpBtnIconStyle"
         BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
         TargetType="iconPacks:PackIconMaterial">
         <Setter Property="Foreground" Value="DodgerBlue" />
         <Setter Property="Kind" Value="ArrowUpBold" />
+    </Style>
+    <Style
+        x:Key="EditListMoveLeftBtnIconStyle"
+        BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+        TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="ArrowLeftBold" />
     </Style>
     <Style
         x:Key="EditListMoveRightBtnIconStyle"
@@ -231,22 +238,64 @@
         <Setter Property="Kind" Value="ArrowRightBold" />
     </Style>
     <Style
-        x:Key="EditListRigthBtnIconStyle"
-        BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+        x:Key="EditListUpBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+        TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="AngleUpSolid" />
+    </Style>
+    <Style
+        x:Key="EditListDoubleUpBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+        TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="AngleDoubleUpSolid" />
+    </Style>
+    <Style
+        x:Key="EditListDownBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+        TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="AngleDownSolid" />
+    </Style>
+    <Style
+        x:Key="EditListDoubleDownBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+        TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="AngleDoubleDownSolid" />
+    </Style>
+    <Style
+        x:Key="EditListLeftBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+        TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="AngleLeftSolid" />
+    </Style>
+    <Style
+        x:Key="EditListDoubleLeftBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+        TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Kind" Value="AngleDoubleLeftSolid" />
+    </Style>
+    <Style
+        x:Key="EditListRightBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="DodgerBlue" />
         <Setter Property="Kind" Value="AngleRightSolid" />
     </Style>
     <Style
-        x:Key="EditListDoubleRigthBtnIconStyle"
-        BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+        x:Key="EditListDoubleRightBtnIconStyle"
+        BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
         TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="DodgerBlue" />
         <Setter Property="Kind" Value="AngleDoubleRightSolid" />
     </Style>
 
     <Style x:Key="EditListEnableSettingsBtnIconStyle"
-           BasedOn="{StaticResource EditListFontAwesomelBtnIconStyle}"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
            TargetType="iconPacks:PackIconFontAwesome">
         <Setter Property="Foreground" Value="Violet"/>
         <Setter Property="Kind" Value="WrenchSolid"/>

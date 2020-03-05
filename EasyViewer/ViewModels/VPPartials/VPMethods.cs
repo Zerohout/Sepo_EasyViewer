@@ -6,10 +6,11 @@ namespace EasyViewer.ViewModels
     using System.Linq;
     using System.Threading;
     using Caliburn.Micro;
+    using Helpers.Creators;
     using Models.FilmModels;
     using Vlc.DotNet.Wpf;
-    using static Helpers.SystemVariables;
     using static Helpers.GlobalMethods;
+    using static Helpers.SystemVariables;
 
 
     public partial class VideoPlayerViewModel : Screen
@@ -17,7 +18,7 @@ namespace EasyViewer.ViewModels
         /// <summary>
         /// Создать видеоплеер
         /// </summary>
-        private void CreatePlayer()
+        private void CreatePlayer(Uri address = null)
         {
             try
             {
@@ -29,16 +30,19 @@ namespace EasyViewer.ViewModels
                 }
                 VlcPlayer.Playing += VideoPlayer_Playing;
                 VlcPlayer.Paused += VideoPlayer_Paused;
-                SetFullScreen();
-                VlcPlayer.Play(new Uri(CurrentEpisode.SelectedAddress));
+
+				if(address == null) SetFullScreen();
+				
+                VlcPlayer.Play(address == null ? PreviewAddress : CurrentEpisode.Address.Address);
 
                 while (VlcPlayer.IsPlaying() is false)
                 {
                     Thread.Sleep(50);
                     if (VlcPlayer.CouldPlay is false)
                     {
+						CreatorMethods.LogError(CurrentEpisode.Address.Address);
                         throw new Exception("Видео недоступно. Проверьте ссылку " +
-                                            $"({CurrentEpisode.SelectedAddress}) или интернет соединение");
+                                            $"({CurrentEpisode.Address.Address}) или интернет соединение");
                     }
                 }
             }
@@ -48,7 +52,7 @@ namespace EasyViewer.ViewModels
                 MMVM.CloseVideoPlayer();
             }
         }
-        
+
         /// <summary>
         /// Начать просмотр
         /// </summary>
@@ -70,7 +74,7 @@ namespace EasyViewer.ViewModels
         #region Методы джамперов
 
         /// <summary>
-        /// Начальные действия таймеров
+        /// Начальные действия джамперов
         /// </summary>
         private void StartJumperActions()
         {
@@ -94,10 +98,10 @@ namespace EasyViewer.ViewModels
             CurrentJumper.IsWorking = true;
         }
 
-        /// <summary>
-        /// Конечные действия таймеров
-        /// </summary>
-        private void EndJumperActions()
+		/// <summary>
+		/// Конечные действия джамперов
+		/// </summary>
+		private void EndJumperActions()
         {
             switch (CurrentJumper.JumperMode)
             {
@@ -116,12 +120,31 @@ namespace EasyViewer.ViewModels
             CurrentJumperIndex++;
         }
 
-        #endregion
-        
-        /// <summary>
-        /// Воспроизвести следующий эпизод
-        /// </summary>
-        private void PlayNextEpisode()
+		/// <summary>
+		/// Действия джамперов в событии таймера
+		/// </summary>
+		/// <param name="jumper"></param>
+		private void JumperTimerActions(Jumper jumper)
+		{
+			if (jumper == null) return;
+
+			if (CurrentEpisodeTime >= jumper.StartTime && jumper.IsWorking is false)
+			{
+				StartJumperActions();
+			}
+
+			if (CurrentEpisodeTime >= jumper.EndTime && jumper.IsWorking is true)
+			{
+				EndJumperActions();
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Воспроизвести следующий эпизод
+		/// </summary>
+		private void PlayNextEpisode()
         {
             if (WatchingEpisodesCount <= 0)
             {
@@ -141,7 +164,7 @@ namespace EasyViewer.ViewModels
             CurrentEpisode = CheckedEpisodes[++CurrentEpisodeIndex];
             CurrentJumperIndex = Jumpers.Count > 0 ? 0 : -1;
 
-            VlcPlayer.Play(new Uri(CurrentEpisode.SelectedAddress));
+            VlcPlayer.Play(CurrentEpisode.Address.Address);
             CurrentEpisode.LastDateViewed = DateTime.Now;
             UpdateDbEpisode(CurrentEpisode);
         }
@@ -174,18 +197,20 @@ namespace EasyViewer.ViewModels
         private void StartPreview()
         {
             CurrentJumperIndex = 0;
-            CreatePlayer();
+            CreatePlayer(PreviewAddress);
         }
 
+        
 
-        #region Creating chain of episodes
 
-        /// <summary>
-        /// Создание цепочки эпизодов
-        /// </summary>
-        /// <param name="episodes"></param>
-        /// <returns></returns>
-        private List<Episode> CreateEpisodeChains(List<Episode> episodes)
+		#region Creating chain of episodes
+
+		/// <summary>
+		/// Создание цепочки эпизодов
+		/// </summary>
+		/// <param name="episodes"></param>
+		/// <returns></returns>
+		private List<Episode> CreateEpisodeChains(List<Episode> episodes)
         {
             var count = episodes.Count;
 

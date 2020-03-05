@@ -15,6 +15,7 @@
     Background="Transparent"
     BorderBrush="Transparent"
     ShowDialogsOverTitleBar="False"
+    WindowStartupLocation="CenterScreen"
     UseNoneWindowStyle="True"
     mc:Ignorable="d">
     <Grid>

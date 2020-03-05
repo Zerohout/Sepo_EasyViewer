@@ -116,7 +116,7 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
         /// </summary>
         public TimeSpan DefaultEpisodesActualDuration =>
             TimeSpan.FromSeconds(CheckedEpisodes.Take(WatchingSettings.DefaultEpCount ?? 1)
-                                                .Sum(ce => ce.ActualDuration.TotalSeconds));
+                                                .Sum(ce => ce.Address.ActualDuration.TotalSeconds));
 
         /// <summary>
         /// Видимость элементов зависимых от просмотра эпизодов в случайном порядке

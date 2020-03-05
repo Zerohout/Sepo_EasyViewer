@@ -4,11 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cal="http://www.caliburnproject.org"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:EasyViewer.Helpers"
     xmlns:local="clr-namespace:EasyViewer.Views"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:helpers="clr-namespace:EasyViewer.Helpers"
     Title="Easy viewer player"
     Width="{Binding WindowWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
     Height="{Binding WindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -35,27 +35,143 @@
             <RowDefinition Height="25*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40*" />
             <ColumnDefinition Width="20*" />
-            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="20*" />
+            <ColumnDefinition Width="20*" />
+            <ColumnDefinition Width="20*" />
+            <ColumnDefinition Width="20*" />
         </Grid.ColumnDefinitions>
         <ContentControl
             Grid.Row="0"
             Grid.RowSpan="4"
             Grid.Column="0"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="5"
             Content="{x:Static helpers:SystemVariables.Vlc}" />
         <Border
             Grid.Row="0"
             Grid.RowSpan="4"
             Grid.Column="0"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="5"
             Background="Black"
             Opacity="0.7"
             Visibility="{Binding ControlVisibility}" />
+        <!--  Кнопка перемотки назад  -->
         <Grid
             Grid.Row="1"
             Column="1"
+            Visibility="{Binding ControlVisibility}">
+            <Button
+                Panel.ZIndex="1"
+                cal:Message.Attach="[Event Click]=[Action FastForwardLeft()]"
+                Opacity="0.5"
+                Visibility="{Binding PlayVisibility}">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource PlayPauseButtonStyle}" TargetType="Button">
+                        <Style.Triggers>
+                            <!--  Курсор наведён на кнопку  -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="False" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardLeftMouseOn.png" Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <!--  Курсор не наведён на кнопку  -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="False" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardLeft.png" Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <!--  Кнопка нажата  -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="False" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsPressed}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardLeftPressed.png" Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <!--  Курсор наведён на кнопку  -->
+                            <!--
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush
+                                                ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardLeftMouseOn.png"
+                                                Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            -->
+                            <!--  Курсор не наведён на кнопку Pause  -->
+                            <!--
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush
+                                                ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardLeft.png"
+                                                Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            -->
+                            <!--  Кнопка Pause нажата  -->
+                            <!--
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsPressed}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush
+                                                ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardLeftPressed.png"
+                                                Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>-->
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+        <!--  Кнопка проигрывания/паузы  -->
+        <Grid
+            Grid.Row="1"
+            Column="2"
             Visibility="{Binding ControlVisibility}">
             <Button
                 Panel.ZIndex="1"
@@ -63,9 +179,7 @@
                 Opacity="0.5"
                 Visibility="{Binding PlayVisibility}">
                 <Button.Style>
-                    <Style
-                        BasedOn="{StaticResource PlayPauseButtonStyle}"
-                        TargetType="Button">
+                    <Style BasedOn="{StaticResource PlayPauseButtonStyle}" TargetType="Button">
                         <Style.Triggers>
                             <!--  Курсор наведён на кнопку Play  -->
                             <MultiDataTrigger>
@@ -76,9 +190,7 @@
                                 <MultiDataTrigger.Setters>
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <ImageBrush
-                                                ImageSource="../Resources/Images/VideoPlayerButtons/PlayButtonMouseOn.png"
-                                                Stretch="Uniform" />
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/PlayButtonMouseOn.png" Stretch="Uniform" />
                                         </Setter.Value>
                                     </Setter>
                                 </MultiDataTrigger.Setters>
@@ -92,9 +204,7 @@
                                 <MultiDataTrigger.Setters>
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <ImageBrush
-                                                ImageSource="../Resources/Images/VideoPlayerButtons/PlayButton.png"
-                                                Stretch="Uniform" />
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/PlayButton.png" Stretch="Uniform" />
                                         </Setter.Value>
                                     </Setter>
                                 </MultiDataTrigger.Setters>
@@ -108,9 +218,7 @@
                                 <MultiDataTrigger.Setters>
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <ImageBrush
-                                                ImageSource="../Resources/Images/VideoPlayerButtons/PlayButtonPressed.png"
-                                                Stretch="Uniform" />
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/PlayButtonPressed.png" Stretch="Uniform" />
                                         </Setter.Value>
                                     </Setter>
                                 </MultiDataTrigger.Setters>
@@ -124,9 +232,7 @@
                                 <MultiDataTrigger.Setters>
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <ImageBrush
-                                                ImageSource="../Resources/Images/VideoPlayerButtons/PauseButtonMouseOn.png"
-                                                Stretch="Uniform" />
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/PauseButtonMouseOn.png" Stretch="Uniform" />
                                         </Setter.Value>
                                     </Setter>
                                 </MultiDataTrigger.Setters>
@@ -140,9 +246,7 @@
                                 <MultiDataTrigger.Setters>
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <ImageBrush
-                                                ImageSource="../Resources/Images/VideoPlayerButtons/PauseButton.png"
-                                                Stretch="Uniform" />
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/PauseButton.png" Stretch="Uniform" />
                                         </Setter.Value>
                                     </Setter>
                                 </MultiDataTrigger.Setters>
@@ -156,9 +260,7 @@
                                 <MultiDataTrigger.Setters>
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <ImageBrush
-                                                ImageSource="../Resources/Images/VideoPlayerButtons/PauseButtonPressed.png"
-                                                Stretch="Uniform" />
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/PauseButtonPressed.png" Stretch="Uniform" />
                                         </Setter.Value>
                                     </Setter>
                                 </MultiDataTrigger.Setters>
@@ -168,11 +270,123 @@
                 </Button.Style>
             </Button>
         </Grid>
-
+        <!--  Кнопка перемотки вперёд  -->
+        <Grid
+            Grid.Row="1"
+            Column="3"
+            Visibility="{Binding ControlVisibility}">
+            <Button
+                Panel.ZIndex="1"
+                cal:Message.Attach="[Event Click]=[Action FastForwardRight()]"
+                Opacity="0.5"
+                Visibility="{Binding PlayVisibility}">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource PlayPauseButtonStyle}" TargetType="Button">
+                        <Style.Triggers>
+                            <!--  Курсор наведён на кнопку Play  -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="False" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardRigthMouseOn.png" Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <!--  Курсор не наведён на кнопку Play  -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="False" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardRigth.png" Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <!--  Кнопка Play нажата  -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="False" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsPressed}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardRigthPressed.png" Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <!--  Курсор наведён на кнопку Pause  -->
+                            <!--
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush
+                                                ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardRigthMouseOn.png"
+                                                Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            -->
+                            <!--  Курсор не наведён на кнопку Pause  -->
+                            <!--
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush
+                                                ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardRigth.png"
+                                                Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            -->
+                            <!--  Кнопка Pause нажата  -->
+                            <!--
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPlaying}" Value="True" />
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsPressed}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <ImageBrush
+                                                ImageSource="../Resources/Images/VideoPlayerButtons/FastForwardRigthPressed.png"
+                                                Stretch="Uniform" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>-->
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
         <Grid
             Grid.Row="3"
             Grid.Column="0"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="5"
             Visibility="{Binding ControlVisibility}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -203,12 +417,8 @@
                     Foreground="AliceBlue">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0:hh\:mm\:ss}\{1:hh\:mm\:ss}">
-                            <Binding
-                                Path="CurrentEpisodeTime"
-                                UpdateSourceTrigger="PropertyChanged" />
-                            <Binding
-                                Path="CurrentEpisode.EpisodeEndTime"
-                                UpdateSourceTrigger="PropertyChanged" />
+                            <Binding Path="CurrentEpisodeTime" UpdateSourceTrigger="PropertyChanged" />
+                            <Binding Path="CurrentEpisode.EpisodeEndTime" UpdateSourceTrigger="PropertyChanged" />
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>

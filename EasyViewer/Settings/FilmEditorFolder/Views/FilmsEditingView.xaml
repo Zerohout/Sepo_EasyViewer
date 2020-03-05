@@ -27,36 +27,7 @@
 
         <!--#region Row 0-->
 
-        <!--#region Logo-->
-
-        <Grid
-            Grid.Row="0"
-            Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Image
-                Source="{Binding Logo}"
-                Stretch="Uniform" />
-            <Button
-                x:Name="ChangeImage"
-                Grid.Row="1"
-                HorizontalAlignment="Center">
-                <TextBlock
-                    FontSize="13"
-                    Foreground="AliceBlue"
-                    Style="{StaticResource SEDefaultTBlockStyle}"
-                    Text="Изменить изображение" />
-            </Button>
-        </Grid>
-
-        <!--#endregion-->
-
-        <!--#region Name & FilmType-->
+       <!--#region Name & FilmType-->
 
         <Grid
             Grid.Row="0"
@@ -165,8 +136,10 @@
         <!--#region SeasonsList-->
 
         <Grid
-            Grid.Row="1"
+            Grid.Row="0"
+            Grid.RowSpan="2"
             Grid.Column="0"
+            Margin="5"
             Visibility="{Binding SaveChangesVisibility}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -212,11 +185,17 @@
                     ToolTip="Выбрать первый сезон, если список не реагирует на курсор">
                     <iconPacks:PackIconFontAwesome Style="{StaticResource EditListSelectBtnIconStyle}" />
                 </Button>
+                <TextBox
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]"
+                    Text="{Binding AddingSeasonValue, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                    ToolTip="Количество создаваемых сезонов за один клик." />
                 <Button
                     Margin="0,2.5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action AddSeason()]"
+                    cal:Message.Attach="[Event Click]=[Action AddSeasons()]"
                     ToolTip="Добавить новый сезон">
                     <iconPacks:PackIconMaterial Style="{StaticResource EditListAddBtnIconStyle}" />
                 </Button>

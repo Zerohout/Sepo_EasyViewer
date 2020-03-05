@@ -204,7 +204,7 @@
         /// </summary>
         private void CreateErrorLog()
         {
-            var filePath = $"{AppPath}\\{ErrorLogsFolderName}\\{ErrorLogName}";
+            var filePath = $"{AppPath}\\{ErrorLogsFolderName}\\{LogName}";
 
             using (var fs = new FileStream(filePath, FileMode.Create))
             {

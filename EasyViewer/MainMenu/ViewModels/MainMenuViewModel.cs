@@ -2,8 +2,6 @@
 {
     using System.Windows.Forms;
     using System.Windows.Input;
-    using Vlc.DotNet.Core;
-    using Vlc.DotNet.Wpf;
     using static Helpers.SystemVariables;
     using Screen = Caliburn.Micro.Screen;
 

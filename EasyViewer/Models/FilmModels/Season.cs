@@ -33,10 +33,6 @@
         /// </summary>
         public bool Checked { get; set; } = true;
         /// <summary>
-        /// Изображение преобразованное в массив байт
-        /// </summary>
-        public byte[] ImageBytes { get; set; }
-        /// <summary>
         /// Эпизоды сезона
         /// </summary>
         [JsonIgnore]
@@ -58,23 +54,23 @@
                                            e.LastDateViewed).TotalDays > nonRepeatInterval)
                            .Take(count).ToList();
         }
-        /// <summary>
-        /// Получить (общую/фактическую) длительность (всех/определенного количества)  (выбранных/всех) эпизодов 
-        /// </summary>
-        /// <param name="isTotal">True - общая, false - фактическая длительность</param>
-        /// <param name="isChecked">True - выбранные, false - все эпизоды</param>
-        /// <param name="nonRepeatInterval">Интервал простоя эпизода в днях (-1 - без учета интервала)</param>
-        /// <param name="count">Количество эпизодов с учетом опций (0 - все)</param>
-        /// <returns></returns>
-        public TimeSpan GetEpisodesDuration(bool isTotal = true, bool isChecked = false, int nonRepeatInterval = -1, int count = 0)
-        {
-            if (count <= 0 || count > Episodes.Count) count = Episodes.Count;
+        ///// <summary>
+        ///// Получить (общую/фактическую) длительность (всех/определенного количества)  (выбранных/всех) эпизодов 
+        ///// </summary>
+        ///// <param name="isTotal">True - общая, false - фактическая длительность</param>
+        ///// <param name="isChecked">True - выбранные, false - все эпизоды</param>
+        ///// <param name="nonRepeatInterval">Интервал простоя эпизода в днях (-1 - без учета интервала)</param>
+        ///// <param name="count">Количество эпизодов с учетом опций (0 - все)</param>
+        ///// <returns></returns>
+        //public TimeSpan GetEpisodesDuration(bool isTotal = true, bool isChecked = false, int nonRepeatInterval = -1, int count = 0)
+        //{
+        //    if (count <= 0 || count > Episodes.Count) count = Episodes.Count;
 
-            var episodes = GetEpisodes(isChecked, nonRepeatInterval, count);
+        //    var episodes = GetEpisodes(isChecked, nonRepeatInterval, count);
 
-            return TimeSpan.FromSeconds(episodes.Sum(e => isTotal
-                                                 ? e.TotalDuration.TotalSeconds
-                                                 : e.ActualDuration.TotalSeconds));
-        }
+        //    return TimeSpan.FromSeconds(episodes.Sum(e => isTotal
+        //                                         ? e.TotalDuration.TotalSeconds
+        //                                         : e.ActualDuration.TotalSeconds));
+        //}
     }
 }

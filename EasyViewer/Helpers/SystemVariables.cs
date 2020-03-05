@@ -1,10 +1,10 @@
-﻿using System;
-
-namespace EasyViewer.Helpers
+﻿namespace EasyViewer.Helpers
 {
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using System.Threading;
     using System.Windows.Forms;
     using Caliburn.Micro;
     using Vlc.DotNet.Core;
@@ -18,12 +18,14 @@ namespace EasyViewer.Helpers
         public const string DefaultLogoImageName = "DefaultLogo.png";
 
         public const string NewFilmName = "Новый_фильм";
-
+        public const string SP = "Южный парк";
+		public static CancellationTokenSource AddingFilmCancellationTokenSource;
+		public static CancellationToken AddingFilmToken;
 
         /// <summary>
-        /// Папка нахождения приложения
-        /// </summary>
-        public static string AppPath = new FileInfo(
+		/// Папка нахождения приложения
+		/// </summary>
+		public static string AppPath = new FileInfo(
             Assembly.GetEntryAssembly()?.Location ??
             AppDomain.CurrentDomain.BaseDirectory).DirectoryName;
         /// <summary>
@@ -34,6 +36,10 @@ namespace EasyViewer.Helpers
         /// Название папки с логами ошибок
         /// </summary>
         public const string ErrorLogsFolderName = "ErrorLogs";
+		/// <summary>
+		/// Название папки с данными разработки
+		/// </summary>
+        public const string DevelopmentDataFolderName = "DevelopmentData";
         /// <summary>
         /// Путь до папки с данными приложения
         /// </summary>
@@ -61,7 +67,7 @@ namespace EasyViewer.Helpers
         /// <summary>
         /// Названия файла с ошибкой
         /// </summary>
-        public static readonly string ErrorLogName = $"{DateTime.Today:d}_{DateTime.Now.Hour:00}.{DateTime.Now.Minute:00}.{DateTime.Now.Second:00}.txt";
+        public static readonly string LogName = $"{DateTime.Today:d}_{DateTime.Now.Hour:00}.{DateTime.Now.Minute:00}.{DateTime.Now.Second:00}.txt";
 
         /// <summary>
         /// Менеджер окон
@@ -200,39 +206,70 @@ namespace EasyViewer.Helpers
         }
 
        public static Dictionary<string, string> TranslitDictionary = new Dictionary<string, string>
-        {
+       {
+            {"А","A"},
             {"а","a"},
+            {"Б","B"},
             {"б","b"},
+            {"В","V"},
             {"в","v"},
+            {"Г","G"},
             {"г","g"},
+            {"Д","D"},
             {"д","d"},
+            {"Е","E"},
             {"е","e"},
+            {"Ё","Yo"},
             {"ё","yo"},
+            {"Ж","Zh"},
             {"ж","zh"},
+            {"З","Z"},
             {"з","z"},
+            {"И","I"},
             {"и","i"},
+            {"Й","Y"},
             {"й","y"},
+            {"К","K"},
             {"к","k"},
+            {"Л","L"},
             {"л","l"},
+            {"М","M"},
             {"м","m"},
+            {"Н","N"},
             {"н","n"},
+            {"О","O"},
             {"о","o"},
+            {"П","P"},
             {"п","p"},
+            {"Р","R"},
             {"р","r"},
+            {"С","S"},
             {"с","s"},
+            {"Т","T"},
             {"т","t"},
+            {"У","U"},
             {"у","u"},
+            {"Ф","F"},
             {"ф","f"},
+            {"Х","H"},
             {"х","h"},
+            {"Ц","Ts"},
             {"ц","ts"},
+            {"Ч","Ch"},
             {"ч","ch"},
+            {"Ш","Sh"},
             {"ш","sh"},
+            {"Щ","Sch"},
             {"щ","sch"},
             {"ъ","`"},
+            {"Ы","I"},
             {"ы","i"},
             {"ь","'"},
+            {"Э","E"},
             {"э","e"},
+            {"Ю","Yu"},
             {"ю","yu"},
+            {"Я","Ya"},
             {"я","ya"},
             {" ", "_" }
         };

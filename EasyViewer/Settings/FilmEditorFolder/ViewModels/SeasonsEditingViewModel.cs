@@ -1,6 +1,7 @@
 ﻿namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 {
-    using Caliburn.Micro;
+	using System.Linq;
+	using Caliburn.Micro;
     using Models.FilmModels;
     using Newtonsoft.Json;
 
@@ -14,7 +15,8 @@
         public SeasonsEditingViewModel(Season season)
         {
             CurrentSeason = season;
-            SeasonSnapshot = JsonConvert.SerializeObject(season);
+            SelectedEpisode = Episodes?.FirstOrDefault();
+            SeasonDescription = season.Description;
             NotifyOfPropertyChange(() => CanSelectEpisode);
 
         }

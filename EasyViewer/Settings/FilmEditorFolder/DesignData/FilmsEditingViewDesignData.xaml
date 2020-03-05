@@ -3,8 +3,4 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helper="clr-namespace:EasyViewer.Helpers"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:vm="clr-namespace:EasyViewer.Settings.FilmEditorFolder.ViewModels">
-
-    
-    
-</vm:FilmsEditingViewModel>
+    xmlns:vm="clr-namespace:EasyViewer.Settings.FilmEditorFolder.ViewModels" />

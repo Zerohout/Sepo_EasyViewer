@@ -3,11 +3,11 @@
     using System.Windows.Controls;
 
     /// <summary>
-	/// Логика взаимодействия для EpisodesEditingView.xaml
+	/// Логика взаимодействия для EpisodesEditorView.xaml
 	/// </summary>
-	public partial class EpisodesEditingView : UserControl
+	public partial class EpisodesEditorView : UserControl
 	{
-		public EpisodesEditingView()
+		public EpisodesEditorView()
 		{
 			InitializeComponent();
 		}

@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:EasyViewer.MainMenu.Views"
-    xmlns:wv="clr-namespace:EasyViewer.Helpers"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wv="clr-namespace:EasyViewer.Helpers"
     MinWidth="960"
     MinHeight="540"
     cal:Bind.AtDesignTime="True"
@@ -23,9 +23,7 @@
     </UserControl.Resources>
 
     <UserControl.Background>
-        <ImageBrush
-            ImageSource="{Binding Background}"
-            Opacity="{Binding Opacity}" />
+        <ImageBrush ImageSource="{Binding Background}" Opacity="{Binding Opacity}" />
     </UserControl.Background>
     <Grid Opacity="{Binding Opacity}">
         <Grid.RowDefinitions>
@@ -41,9 +39,8 @@
 
         <!--#region Row 0-->
 
-        <Grid
-            Grid.Row="0"
-            Grid.Column="0">
+        <!--#region Список фильмов-->
+        <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -52,12 +49,8 @@
                 <ColumnDefinition Width="0.9*" />
                 <ColumnDefinition Width="0.06*" />
             </Grid.ColumnDefinitions>
-            <ScrollViewer
-                Grid.Row="0"
-                Grid.Column="1">
-                <ItemsControl
-                    ItemsSource="{Binding Films}"
-                    Style="{StaticResource MMItemsControlStyle}">
+            <ScrollViewer Grid.Row="0" Grid.Column="1">
+                <ItemsControl ItemsSource="{Binding Films}" Style="{StaticResource MMItemsControlStyle}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <DockPanel Margin="0,7">
@@ -78,16 +71,12 @@
                                     Text="{Binding Name}" />
                             </DockPanel>
                             <DataTemplate.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding Checked}"
-                                    Value="True">
+                                <DataTrigger Binding="{Binding Checked}" Value="True">
                                     <Setter TargetName="ToggleButton" Property="Kind" Value="Eye" />
                                     <Setter TargetName="ToggleButton" Property="Foreground" Value="LimeGreen" />
                                     <Setter TargetName="FilmName" Property="Foreground" Value="LimeGreen" />
                                 </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding Checked}"
-                                    Value="False">
+                                <DataTrigger Binding="{Binding Checked}" Value="False">
                                     <Setter TargetName="ToggleButton" Property="Kind" Value="EyeOff" />
                                     <Setter TargetName="ToggleButton" Property="Foreground" Value="#FFCE0000" />
                                 </DataTrigger>
@@ -97,10 +86,74 @@
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
+        <!--#endregion-->
 
-        <Grid
-            Grid.Row="0"
-            Grid.Column="2">
+        <!--#region Выключение компа и кол. эпизодов-->
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.3*" />
+                <RowDefinition Height="0.35*" />
+                <RowDefinition Height="0.35*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.25*" />
+                <ColumnDefinition Width="0.4*" />
+                <ColumnDefinition Width="0.35*" />
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="87.5*" />
+                    <RowDefinition Height="12.5*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="77.5*" />
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="17.5*" />
+                </Grid.ColumnDefinitions>
+                <Button
+                    cal:Message.Attach="[Event MouseDoubleClick]=[Action SecretAction]"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    MinHeight="1"
+                    Style="{StaticResource ExitButtonStyle}" />
+            </Grid>
+            <Grid
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.22*" />
+                    <ColumnDefinition Width="0.78*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
+                    <TextBlock Style="{StaticResource MMDefaultTBlockStyle}" Text="Доступно эпизодов: " />
+                    <TextBlock Style="{StaticResource MMDefaultTBlockStyle}" Text="{Binding AvailableEpisodesCount}" />
+                </StackPanel>
+            </Grid>
+            <StackPanel
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Vertical">
+                <TextBlock
+                    FontSize="15"
+                    Style="{StaticResource MMDefaultTBlockStyle}"
+                    Text="Выключить комп?" />
+                <mah:ToggleSwitchButton HorizontalAlignment="Center" IsChecked="{Binding IsShutdownComp}" />
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Выход из программы-->
+        <Grid Grid.Row="0" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.3*" />
                 <RowDefinition Height="0.52*" />
@@ -114,21 +167,17 @@
             <Button
                 Grid.Row="1"
                 Grid.Column="1"
-                cal:Message.Attach="[Event Click]=[Action Exit()];
-                [Event MouseEnter]=[Action CursorOnExit()];
-                [Event MouseLeave]=[Action CursorOutsideExit()]"
-                Style="{StaticResource ExitButtonStyle}">
-
-            </Button>
+                cal:Message.Attach="[Event Click]=[Action Exit()];                 [Event MouseEnter]=[Action CursorOnExit()];                 [Event MouseLeave]=[Action CursorOutsideExit()]"
+                Style="{StaticResource ExitButtonStyle}" />
         </Grid>
+        <!--#endregion-->
 
         <!--#endregion-->
 
         <!--#region Row 1-->
 
-        <Grid
-            Grid.Row="1"
-            Grid.Column="0">
+        <!--#region Эпизоды и время-->
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
@@ -193,11 +242,12 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock
+                    Grid.RowSpan="2"
                     Grid.Column="0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Style="{StaticResource MMDefaultTBlockStyle}"
-                    Text="{Binding EpisodesCountRemainingString}" Grid.RowSpan="2">
+                    Text="{Binding EpisodesCountRemainingString}">
                     <TextBlock.RenderTransform>
                         <RotateTransform Angle="-6" />
                     </TextBlock.RenderTransform>
@@ -214,9 +264,7 @@
                     </TextBlock.RenderTransform>
                 </TextBlock>
             </Grid>
-            <Grid
-                Grid.Row="0"
-                Grid.Column="3">
+            <Grid Grid.Row="0" Grid.Column="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.45*" />
                     <RowDefinition Height="0.45*" />
@@ -236,87 +284,38 @@
                     </TextBox.RenderTransform>
                 </TextBox>
             </Grid>
-
         </Grid>
+        <!--#endregion-->
+
+        <!--#region Панель разработчика-->
+
         <Grid
-            Grid.Row="0"
-            Grid.Column="1">
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="2">
+
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.3*" />
-                <RowDefinition Height="0.35*" />
-                <RowDefinition Height="0.35*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.25*" />
-                <ColumnDefinition Width="0.4*" />
-                <ColumnDefinition Width="0.35*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="87.5*"/>
-                    <RowDefinition Height="12.5*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="77.5*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="17.5*"/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="SecretAction"
-                    Grid.Row="1"
-                        Grid.Column="1" 
-                        MinHeight="1"
-                        Style="{StaticResource ExitButtonStyle}"/>
-
-            </Grid>
-            <Grid
-                Grid.Row="2"
-                Grid.Column="0"
-                Grid.ColumnSpan="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.22*" />
-                    <ColumnDefinition Width="0.78*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel
-                    Grid.Column="1"
-                    HorizontalAlignment="Center"
-                    Orientation="Vertical">
-                    <TextBlock
-                        Style="{StaticResource MMDefaultTBlockStyle}"
-                        Text="Доступно эпизодов: " />
-                    <TextBlock
-                        Style="{StaticResource MMDefaultTBlockStyle}"
-                        Text="{Binding AvailableEpisodesCount}" />
-                </StackPanel>
-
-            </Grid>
-
-            <StackPanel
-                Grid.Row="1"
-                Grid.Column="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Orientation="Vertical">
-                <TextBlock
-                    FontSize="15"
-                    Style="{StaticResource MMDefaultTBlockStyle}"
-                    Text="Выключить комп?" />
-                <mah:ToggleSwitchButton
-                    HorizontalAlignment="Center"
-                    IsChecked="{Binding IsShutdownComp}" />
-            </StackPanel>
+            <ListBox
+                Margin="5"
+                ItemsSource="{Binding CommandList}"
+                SelectedItem="{Binding SelectedCommand}"
+                Visibility="{Binding SecretVisibility}" />
         </Grid>
+
+        <!--#endregion-->
 
         <!--#endregion-->
 
         <!--#region Row 2-->
 
-        <Grid
-            Grid.Row="2"
-            Grid.Column="0">
+        <!--#region Начать просмотр-->
+        <Grid Grid.Row="2" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.05*" />
                 <RowDefinition Height="0.45*" />
@@ -327,31 +326,21 @@
                 <ColumnDefinition Width="0.38*" />
                 <ColumnDefinition Width="0.47*" />
             </Grid.ColumnDefinitions>
-
-
             <Button
                 x:Name="Start"
                 Grid.Row="1"
                 Grid.Column="1"
                 Style="{StaticResource StartButtonStyle}">
-
                 <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Text="Начать" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Text="просмотр" />
+                    <TextBlock HorizontalAlignment="Center" Text="Начать" />
+                    <TextBlock HorizontalAlignment="Center" Text="просмотр" />
                 </StackPanel>
-
             </Button>
-
-
         </Grid>
+        <!--#endregion-->
 
-        <Grid
-            Grid.Row="2"
-            Grid.Column="1">
+        <!--#region Панель разработчика-->
+        <Grid Grid.Row="2" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
@@ -362,31 +351,32 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button
-                Visibility="{Binding SecretVisibility}"
-                x:Name="AddEpisodes"
+                x:Name="StartCommand"
                 Grid.Row="0"
+                Grid.Column="1"
                 Background="LimeGreen"
-                Grid.Column="1">
+                Visibility="{Binding SecretVisibility}">
                 <TextBlock
                     FontSize="20"
                     Style="{StaticResource MMDefaultTBlockStyle}"
-                    Text="Добавить эпизоды" />
+                    Text="Выполнить" />
             </Button>
-            <Button
-                Visibility="{Binding SecretVisibility}"
-                x:Name="RemoveEpisodes"
+            <!--<Button
+                x:Name="RemoveFilms"
                 Grid.Row="2"
+                Grid.Column="1"
                 Background="Tomato"
-                Grid.Column="1">
+                Visibility="{Binding SecretVisibility}">
                 <TextBlock
                     FontSize="20"
                     Style="{StaticResource MMDefaultTBlockStyle}"
                     Text="Удалить эпизоды" />
-            </Button>
+            </Button>-->
         </Grid>
-        <Grid
-            Grid.Row="2"
-            Grid.Column="2">
+        <!--#endregion-->
+
+        <!--#region Перейти к настройкам-->
+        <Grid Grid.Row="2" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
@@ -407,6 +397,7 @@
                     Text="Перейти к настройкам" />
             </Button>
         </Grid>
+        <!--#endregion-->
 
         <!--#endregion-->
     </Grid>

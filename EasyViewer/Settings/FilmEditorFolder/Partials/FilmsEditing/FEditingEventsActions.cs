@@ -1,11 +1,10 @@
 ﻿// ReSharper disable CheckNamespace
 namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 {
-    using System.Drawing;
-    using System.Linq;
+	using System.Linq;
     using System.Windows.Controls;
-    using Microsoft.Win32;
-    using Models.FilmModels;
+	using System.Windows.Input;
+	using Models.FilmModels;
     using Newtonsoft.Json;
     using static Helpers.GlobalMethods;
     using static Helpers.SystemVariables;
@@ -14,25 +13,6 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
     public partial class FilmsEditingViewModel : Screen
     {
         #region Film actions
-
-        /// <summary>
-        /// Кнопка "Изменить изображение"
-        /// </summary>
-        public void ChangeImage()
-        {
-            var ofd = new OpenFileDialog
-            {
-                CheckFileExists = true,
-                Filter = $"Изображения(*.jpg, *.png, *.bmp)|*.jpg;*.png; *.bmp;"
-            };
-
-            if (ofd.ShowDialog() is false) return;
-
-            CurrentFilm.ImageBytes = ImageToByteArray(new Bitmap(ofd.FileName)).ToArray();
-
-            NotifyOfPropertyChange(() => Logo);
-            NotifyChanges();
-        }
 
         /// <summary>
         /// Создать фильм
@@ -116,19 +96,21 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
                                        SelectedSeason == null;
 
         /// <summary>
-        /// Добавить сезон
+        /// Добавить сезоны
         /// </summary>
-        public void AddSeason()
+        public void AddSeasons()
         {
-            var number = CurrentFilm.Seasons.Count + 1;
-            var imageBytes = ImageToByteArray(new Bitmap($"{AppDataPath}\\{DefaultLogoImageName}"));
+            var number = Seasons.Count;
 
-            CurrentFilm.Seasons.Add(new Season { Number = number, ImageBytes = imageBytes });
-            SelectedSeason = CurrentFilm.Seasons.Last();
+            for (var i = 0; i < AddingSeasonValue; i++)
+            {
+				CurrentFilm.Seasons.Add(new Season{Number = ++number});
+            }
 
             UpdateDbCollection(obj: CurrentFilm);
+			SelectedSeason = Seasons.Last();
+
             NotifyOfPropertyChange(() => Seasons);
-            NotifyOfPropertyChange(() => CanRemoveSeason);
         }
 
         /// <summary>
@@ -136,18 +118,20 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
         /// </summary>
         public void EditSeason()
         {
+	        if (CanEditSeason is false) return;
             ESVM.ResetSelectedSeason(SelectedSeason);
         }
 
         public bool CanEditSeason => SelectedSeason != null;
 
         /// <summary>
-        /// Удалить выбранный сезон
+        /// Удалить последний сезон
         /// </summary>
         public void RemoveSeason()
         {
             if (CanRemoveSeason is false) return;
-            CurrentFilm.Seasons.Remove(CurrentFilm.Seasons.Last());
+				
+            CurrentFilm.Seasons.Remove(Seasons.Last());
             SelectedSeason = CurrentFilm.Seasons.LastOrDefault();
 
             UpdateDbCollection(obj: CurrentFilm);
@@ -156,7 +140,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 
         }
 
-        public bool CanRemoveSeason => CurrentFilm.Seasons.Count > 0;
+        public bool CanRemoveSeason => Seasons.Count > 0;
 
         /// <summary>
         /// Убрать выделение с сезона
@@ -200,7 +184,17 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 
         }
 
-        #endregion
+        /// <summary>
+        /// Проверка на ввод числовых данных
+        /// </summary>
+        /// <param name="e"></param>
+        public void NumericValidation(KeyEventArgs e)
+        {
+	        e.Handled = (e.Key.GetHashCode() >= 34 && e.Key.GetHashCode() <= 43 ||
+	                     e.Key.GetHashCode() >= 74 && e.Key.GetHashCode() <= 83) is false;
+        }
 
-    }
+		#endregion
+
+	}
 }

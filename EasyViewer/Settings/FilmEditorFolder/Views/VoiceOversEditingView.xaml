@@ -153,7 +153,7 @@
                         Width="15"
                         Height="12"
                         Padding="-3"
-                        Style="{StaticResource EditListUpBtnIconStyle}" />
+                        Style="{StaticResource EditListMoveUpBtnIconStyle}" />
                 </Button>
                 <Button
                     Grid.Row="1"
@@ -166,7 +166,7 @@
                         Width="15"
                         Height="12"
                         Padding="-3"
-                        Style="{StaticResource EditListDownBtnIconStyle}" />
+                        Style="{StaticResource EditListMoveDownBtnIconStyle}" />
                 </Button>
 
             </Grid>
@@ -242,7 +242,7 @@
                     Width="15"
                     Height="12"
                     Padding="-3"
-                    Style="{StaticResource EditListUpBtnIconStyle}" />
+                    Style="{StaticResource EditListMoveUpBtnIconStyle}" />
             </Button>
             <Button
                 Grid.Row="0"
@@ -256,7 +256,7 @@
                     Width="15"
                     Height="12"
                     Padding="-3"
-                    Style="{StaticResource EditListDownBtnIconStyle}" />
+                    Style="{StaticResource EditListMoveDownBtnIconStyle}" />
             </Button>
 
             <TextBlock
@@ -312,7 +312,7 @@
                     Width="15"
                     Height="12"
                     Padding="-3"
-                    Style="{StaticResource EditListUpBtnIconStyle}" />
+                    Style="{StaticResource EditListMoveUpBtnIconStyle}" />
             </Button>
             <Button
                 Grid.Row="1"
@@ -326,7 +326,7 @@
                     Width="15"
                     Height="12"
                     Padding="-3"
-                    Style="{StaticResource EditListDownBtnIconStyle}" />
+                    Style="{StaticResource EditListMoveDownBtnIconStyle}" />
             </Button>
         </Grid>
 
@@ -411,13 +411,13 @@
                     Margin="0,2.5"
                     cal:Message.Attach="[Event Click]=[Action MoveToFilmVoiceOvers()]"
                     ToolTip="Копировать озвучку в выбранный фильм.">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListRigthBtnIconStyle}" />
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListRightBtnIconStyle}" />
                 </Button>
                 <Button
                     Margin="0,2.5,0,5"
                     cal:Message.Attach="[Event Click]=[Action MoveFromGlobalToEpisodeVoiceOvers()]"
                     ToolTip="Копировать озвучку сразу в выбранный эпизод.">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListDoubleRigthBtnIconStyle}" />
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListDoubleRightBtnIconStyle}" />
                 </Button>
             </StackPanel>
         </Grid>
@@ -501,7 +501,7 @@
                     Margin="0,2.5,0,5"
                     cal:Message.Attach="[Event Click]=[Action MoveToEpisodeVoiceOvers()]"
                     ToolTip="Копировать озвучку в выбранный эпизод">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListRigthBtnIconStyle}" />
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListRightBtnIconStyle}" />
                 </Button>
 
             </StackPanel>

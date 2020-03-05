@@ -140,7 +140,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
         private void SetEpisodeVM(Episode value)
         {
             EEVM = value != null
-                ? new EpisodesEditingViewModel() { Parent = this }
+                ? new EpisodesEditorViewModel(SelectedEpisode) { Parent = this }
                 : null;
 
             if (value == null)

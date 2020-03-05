@@ -22,13 +22,19 @@ namespace EasyViewer.MainMenu.ViewModels
         private int _availableEpisodesCount;
         private int? _watchingEpisodesCount;
         private List<Episode> _checkedEpisodes = new List<Episode>();
+        private BindableCollection<string> _commandList = new BindableCollection<string>
+        {
+	        "Добавить \"Южный Парк\"",
+			"Проверить длительности эпизодов",
+			"Удалить все фильмы"
+		};
 
-        #region Window properties
+		#region Window properties
 
-        /// <summary>
-        /// Прозрачность элементов и фона MainMenu
-        /// </summary>
-        public double Opacity
+		/// <summary>
+		/// Прозрачность элементов и фона MainMenu
+		/// </summary>
+		public double Opacity
         {
             get => _opacity;
             set
@@ -78,8 +84,8 @@ namespace EasyViewer.MainMenu.ViewModels
             {
                 _films = value;
                 NotifyOfPropertyChange(() => Films);
-                NotifyOfPropertyChange(() => CanAddEpisodes);
-                NotifyOfPropertyChange(() => CanRemoveEpisodes);
+                NotifyOfPropertyChange(() => CanAddAddSouthPark);
+                NotifyOfPropertyChange(() => CanRemoveFilms);
             }
         }
 
@@ -147,10 +153,7 @@ namespace EasyViewer.MainMenu.ViewModels
             : "Эпизодов осталось:";
 
         #endregion
-
-
-        public bool IsViewingEnded { get; set; } = false;
-        
+		
         #region Свойства связанные со временем
 
         /// <summary>
@@ -162,7 +165,7 @@ namespace EasyViewer.MainMenu.ViewModels
             {
                 var duration = TimeSpan.FromSeconds(CheckedEpisodes
                                                     .Take(WatchingEpisodesCount ?? 0)
-                                                    .Sum(ce => ce.ActualDuration.TotalSeconds));
+                                                    .Sum(ce => ce.Address.ActualDuration.TotalSeconds));
 
                 return DateTime.Now.TimeOfDay + duration;
 
@@ -174,12 +177,31 @@ namespace EasyViewer.MainMenu.ViewModels
         /// </summary>
         public DateTime EndDate => DateTime.Now.AddDays(EndTime.Days);
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Флаг выключения компьютера
-        /// </summary>
-        public bool IsShutdownComp
+		/// <summary>
+		/// Список команд панели разработчика
+		/// </summary>
+		public BindableCollection<string> CommandList
+		{
+			get => _commandList;
+			set
+			{
+				_commandList = value;
+				NotifyOfPropertyChange(() => CommandList);
+			}
+		}
+		/// <summary>
+		/// Выбранная команда
+		/// </summary>
+		public string SelectedCommand { get; set; }
+
+		public bool IsViewingEnded { get; set; } = false;
+
+		/// <summary>
+		/// Флаг выключения компьютера
+		/// </summary>
+		public bool IsShutdownComp
         {
             get => _isShutdownComp;
             set

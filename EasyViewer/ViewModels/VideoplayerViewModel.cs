@@ -1,6 +1,8 @@
 ﻿namespace EasyViewer.ViewModels
 {
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
+    using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Input;
     using MainMenu.ViewModels;
@@ -17,7 +19,7 @@
         }
 
         public VideoPlayerViewModel(MainMenuViewModel mmvm, VideoPlayerMode currentMode, int? epCount,  
-            List<Episode> checkedEpisodes = null, Episode currentEpisode = null)
+            List<Episode> checkedEpisodes = null, Episode currentEpisode = null, string currentAddress = null)
         {
             MMVM = mmvm;
             MainTimer.Elapsed += MainTimer_Elapsed;
@@ -25,13 +27,17 @@
 
             if (currentMode == VideoPlayerMode.Viewing)
             {
+	            PreviewVisibility = Visibility.Collapsed;
                 WatchingEpisodesCount = epCount;
                 CheckedEpisodes = checkedEpisodes;
                 StartViewing();
             }
             else
             {
-                CurrentEpisode = currentEpisode;
+	            PreviewVisibility = Visibility.Visible;
+				PreviewAddress = new Uri(currentAddress ?? "");
+				_currentMode = currentMode;
+                //CurrentEpisode = currentEpisode;
                 StartPreview();
             }
         }

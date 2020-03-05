@@ -45,19 +45,24 @@
 
         public void PreLaunchPreparation()
         {
-            if (!Directory.Exists(AppDataPath))
+            if (Directory.Exists(AppDataPath) is false)
             {
                 Directory.CreateDirectory(AppDataPath);
             }
 
-            if (!Directory.Exists(ImagesPath))
+            if (Directory.Exists(ImagesPath) is false)
             {
                 Directory.CreateDirectory(ImagesPath);
             }
 
-            if (!Directory.Exists($"{AppPath}\\{ErrorLogsFolderName}"))
+            if (Directory.Exists($"{AppPath}\\{ErrorLogsFolderName}") is false)
             {
                 Directory.CreateDirectory($"{AppPath}\\{ErrorLogsFolderName}");
+            }
+
+            if (Directory.Exists($"{AppPath}\\{DevelopmentDataFolderName}") is false)
+            {
+	            Directory.CreateDirectory($"{AppPath}\\{DevelopmentDataFolderName}");
             }
         }
 

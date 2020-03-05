@@ -1,6 +1,7 @@
 ﻿namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 {
-    using Caliburn.Micro;
+	using System.Linq;
+	using Caliburn.Micro;
     using Models.FilmModels;
     using Newtonsoft.Json;
     using static Helpers.SystemVariables;
@@ -17,6 +18,7 @@
         {
             CurrentFilm = film;
             FilmSnapshot = JsonConvert.SerializeObject(film);
+            SelectedSeason = Seasons?.FirstOrDefault();
 
             NotifyOfPropertyChange(() => CreateFilmVisibility);
             NotifyOfPropertyChange(() => SaveChangesVisibility);

@@ -8,8 +8,6 @@ namespace EasyViewer.ViewModels
     using MainMenu.ViewModels;
     using Models.FilmModels;
     using Models.SettingModels;
-    using Vlc.DotNet.Core;
-    using Vlc.DotNet.Wpf;
     using static Helpers.SystemVariables;
 
     public partial class VideoPlayerViewModel : Screen
@@ -18,20 +16,23 @@ namespace EasyViewer.ViewModels
         private WindowState _windowState;
         private Visibility _windowVisibility;
         private Visibility _controlVisibility = Visibility.Collapsed;
+		private Visibility _previewVisibility;
         private TimeSpan _currentEpisodeTime;
         private Episode _currentEpisode;
+        private VideoPlayerMode _currentMode;
 
-        private double _windowWidth = AppVal.WS.VPSize.X;
+		private double _windowWidth = AppVal.WS.VPSize.X;
         private double _windowHeight = AppVal.WS.VPSize.Y;
         private bool _topmost;
         private int _currentJumperIndex = -1;
+        private const int FFStep = 2500;
 
-        #region Window props
+		#region Window props
 
-        /// <summary>
-        /// Главное представление
-        /// </summary>
-        public Window MainView { get; set; }
+		/// <summary>
+		/// Главное представление
+		/// </summary>
+		public Window MainView { get; set; }
 
         /// <summary>
         /// Свойство WindowState проигрывателя
@@ -74,10 +75,24 @@ namespace EasyViewer.ViewModels
             }
         }
 
-        /// <summary>
-        /// Ширина проигрывателя
-        /// </summary>
-        public double WindowWidth
+		/// <summary>
+		/// Свойство Visibility элементов предпросмотра
+		/// </summary>
+		public Visibility PreviewVisibility
+		{
+			get => _previewVisibility;
+			set
+			{
+				_previewVisibility = value;
+				NotifyOfPropertyChange(() => PreviewVisibility);
+			}
+		}
+
+
+		/// <summary>
+		/// Ширина проигрывателя
+		/// </summary>
+		public double WindowWidth
         {
             get => _windowWidth;
             set
@@ -154,10 +169,24 @@ namespace EasyViewer.ViewModels
             }
         }
 
-        /// <summary>
-        /// Модель представления главного меню
-        /// </summary>
-        private readonly MainMenuViewModel MMVM;
+		/// <summary>
+		/// Текущий режим видеоплеера
+		/// </summary>
+		public VideoPlayerMode CurrentMode
+		{
+			get => _currentMode;
+			set
+			{
+				_currentMode = value;
+				NotifyOfPropertyChange(() => CurrentMode);
+			}
+		}
+
+
+		/// <summary>
+		/// Модель представления главного меню
+		/// </summary>
+		private readonly MainMenuViewModel MMVM;
 
         /// <summary>
         /// Флаг показывающий состояние проигрывания фильма
@@ -167,6 +196,8 @@ namespace EasyViewer.ViewModels
         #endregion
 
         #region Episodes props
+
+        public Uri PreviewAddress { get; set; }
 
         /// <summary>
         /// Количество просматриваемых эпизодов
@@ -215,7 +246,7 @@ namespace EasyViewer.ViewModels
         /// <summary>
         /// Список джамперов текущего эпизода
         /// </summary>
-        private List<Jumper> Jumpers => CurrentEpisode?.Jumpers ?? new List<Jumper>();
+        private List<Jumper> Jumpers => CurrentEpisode?.Address.Jumpers ?? new List<Jumper>();
 
         /// <summary>
         /// Индекс текущего джампера

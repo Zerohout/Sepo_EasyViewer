@@ -5,7 +5,6 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
     using System.Linq;
     using System.Windows;
     using Caliburn.Micro;
-    using Helpers;
     using Models.FilmModels;
     using static Helpers.SystemVariables;
 
@@ -119,7 +118,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
         /// <summary>
         /// Модель представления эпизода
         /// </summary>
-        private EpisodesEditingViewModel EEVM { get; set; }
+        private EpisodesEditorViewModel EEVM { get; set; }
 
         /// <summary>
         /// Список эпизодов выбранного сезона

@@ -1,14 +1,28 @@
 ﻿namespace EasyViewer.ViewModels
 {
     using System;
+    using System.Diagnostics;
+    using System.Threading;
     using System.Windows.Media;
     using Caliburn.Micro;
+	using static Helpers.SystemVariables;
+    using Timer = System.Timers.Timer;
 
     public class WaitViewModel : Screen
     {
         private int _currentValue;
+        private int _maximumValue;
+		private int _currentAddressNumber;
+		private int _maxAddressNumber;
+        private TimeSpan _remainingTime;
+		private TimeSpan _elapsedTime;
+        private byte r = 255;
+        private byte g;
 
-        public int CurrentValue
+		/// <summary>
+		/// Номер текущего эпизода
+		/// </summary>
+		public int CurrentValue
         {
             get => _currentValue;
             set
@@ -21,8 +35,9 @@
             }
         }
 
-        private int _maximumValue;
-
+		/// <summary>
+		/// Максимальное количество эпизодов
+		/// </summary>
         public int MaximumValue
         {
             get => _maximumValue;
@@ -33,13 +48,43 @@
             }
         }
 
+		/// <summary>
+		/// Номер текущего адреса
+		/// </summary>
+		public int CurrentAddressNumber
+		{
+			get => _currentAddressNumber;
+			set
+			{
+				_currentAddressNumber = value;
+				NotifyOfPropertyChange(() => CurrentAddressNumber);
+			}
+		}
 
-        public SolidColorBrush ProgressBarForeground => GetRGBColor(GetPercent(_maximumValue, _currentValue));
+		/// <summary>
+		/// Максимальное количество адресов
+		/// </summary>
+		public int MaxAddressNumber
+		{
+			get => _maxAddressNumber;
+			set
+			{
+				_maxAddressNumber = value;
+				NotifyOfPropertyChange(() => MaxAddressNumber);
+			}
+		}
+
+
+		public SolidColorBrush ProgressBarForeground => GetRGBColor(GetPercent(_maximumValue, _currentValue));
         
+		/// <summary>
+		/// Процентное соотношение прогресса операции
+		/// </summary>
         public int Procents => GetPercent(_maximumValue, _currentValue);
 
-        private TimeSpan _remainingTime;
-
+		/// <summary>
+		/// Примерное оставшееся время завершения операции
+		/// </summary>
         public TimeSpan RemainingTime
         {
             get => _remainingTime;
@@ -59,10 +104,33 @@
             }
         }
 
-        private byte r = 255;
-        private byte g;
+		/// <summary>
+		/// Прошешее время
+		/// </summary>
+		public TimeSpan ElapsedTime
+		{
+			get => _elapsedTime;
+			set
+			{
+				_elapsedTime = value;
+				NotifyOfPropertyChange(() => ElapsedTime);
+			}
+		}
 
-        private SolidColorBrush GetRGBColor(int currentValue)
+		public Timer Timer { get; set; }
+		public Stopwatch Stopwatch { get; set; }
+
+		public void CancelOperation()
+		{
+			AddingFilmCancellationTokenSource.Cancel();
+		}
+
+		/// <summary>
+		/// Получить цвет полосы прогресса
+		/// </summary>
+		/// <param name="currentValue">Текущее значение</param>
+		/// <returns></returns>
+		private SolidColorBrush GetRGBColor(int currentValue)
         {
             if (currentValue > 100) return new SolidColorBrush(Color.FromRgb(0, 255, 0));
 
