@@ -4,6 +4,7 @@ namespace EasyViewer.MainMenu.ViewModels
 	using System.Collections.Generic;
 	using System.IO;
 	using System;
+	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Windows;
@@ -12,6 +13,7 @@ namespace EasyViewer.MainMenu.ViewModels
 	using LiteDB;
 	using Models.FilmModels;
 	using EasyViewer.Settings.SettingsFolder.ViewModels;
+	using Helpers.Creators.SouthPark;
 	using static Helpers.GlobalMethods;
 	using static Helpers.Creators.SouthPark.SPCreator;
 	using static Helpers.SystemVariables;
@@ -179,42 +181,36 @@ namespace EasyViewer.MainMenu.ViewModels
 			if (CanAddAddSouthPark is false) return false;
 			AddingFilmCancellationTokenSource = new CancellationTokenSource();
 			AddingFilmToken = AddingFilmCancellationTokenSource.Token;
-			using (var db = new LiteDatabase(DBPath))
+
+			try
 			{
-				var films = db.GetCollection<Film>("Film");
+				var wvm = new WaitViewModel();
+				WinMan.ShowWindow(wvm);
 
-				try
+				((Window)((MainViewModel)Parent).GetView()).IsEnabled = false;
+
+				await Task.Run(() =>
 				{
-					var wvm = new WaitViewModel();
-					WinMan.ShowWindow(wvm);
+					CreateSP(wvm);
 
-					((Window)((MainViewModel)Parent).GetView()).IsEnabled = false;
+				});
 
-					await Task.Run(() =>
-					{
-						var film = CreateSP(wvm);
-						if (AddingFilmToken.IsCancellationRequested is false)
-						{
-							films.Insert(film);
-						}
-					});
-					
-					((Window)((MainViewModel)Parent).GetView()).IsEnabled = true;
-					wvm.TryClose();
-				}
-				catch (Exception e)
-				{
-					WinMan.ShowWindow(new DialogViewModel(e.ToString(), DialogType.ERROR, e));
-					return false;
-				}
-				Films = new BindableCollection<Film>(films.FindAll());
-				CheckedValidation();
+				((Window)((MainViewModel)Parent).GetView()).IsEnabled = true;
+				wvm.TryClose();
 			}
+			catch (Exception e)
+			{
+				WinMan.ShowWindow(new DialogViewModel(e.ToString(), DialogType.ERROR, e));
+				return false;
+			}
+			Films = new BindableCollection<Film>(GetDbCollection<Film>());
+			CheckedValidation();
+
 
 			return AddingFilmToken.IsCancellationRequested is false;
 		}
 
-		public bool CanAddAddSouthPark => Films.Count < 1;
+		public bool CanAddAddSouthPark => true;
 
 		/// <summary>
 		/// Выполнить команду
@@ -231,6 +227,9 @@ namespace EasyViewer.MainMenu.ViewModels
 				case "Проверить длительности эпизодов":
 					result = ValidateEpisodesDuration();
 					break;
+				case "Проверить содержимое фильма \"Южный Парк\"":
+					result = CheckSP();
+					break;
 				case "Удалить все фильмы":
 					result = RemoveFilms();
 					break;
@@ -240,6 +239,18 @@ namespace EasyViewer.MainMenu.ViewModels
 			}
 			WinMan.ShowDialog(new DialogViewModel(result ? "Команда успешно выполнена" : "Команда не выполнена", DialogType.INFO));
 		}
+
+		/// <summary>
+		/// Удалить выбранный фильм
+		/// </summary>
+		public void RemoveSelectedFilm()
+		{
+			if (CanRemoveSelectedFilm is false) return;
+			RemoveFilmFromDb(SelectedRemovingFilm);
+			LoadFilms();
+		}
+
+		public bool CanRemoveSelectedFilm => SelectedRemovingFilm != null;
 
 		/// <summary>
 		/// Удалить все эпизоды
@@ -276,7 +287,7 @@ namespace EasyViewer.MainMenu.ViewModels
 				}
 			}
 
-			var filePath = $"{AppPath}\\{DevelopmentDataFolderName}\\{LogName}";
+			var filePath = $"{AppPath}\\{DevelopmentDataFolderName}\\DurationValidate-{LogName}";
 
 			using (var fs = new FileStream(filePath, System.IO.FileMode.Create))
 			{
@@ -295,7 +306,67 @@ namespace EasyViewer.MainMenu.ViewModels
 			return true;
 		}
 
+
+
 		public bool CanValidateEpisodesDuration => Films.Count >= 1;
+
+		public bool CheckSP()
+		{
+			if (CanCheckSP is false) return false;
+
+			var result = new List<string>();
+			var count = 1;
+
+			var film = Films.First(f => f.Name == "Южный парк");
+
+			result.Add($"Общая информация:\n{film.FilmType} {film.Name}\n" +
+					   $"Сезонов - {film.Seasons.Count}, Эпизодов - {film.Episodes.Count}\n\n" +
+					   $"\tИнформация по Сезонам и эпизодам:\n\n");
+
+
+			foreach (var season in film.Seasons)
+			{
+				result.Add($"\tСезон №{season.Number}, количество эпизодов - {season.Episodes.Count}\n");
+
+				foreach (var episode in season.Episodes)
+				{
+					result.Add($"\t\tЭпизод №{episode.Number}, полный номер - {episode.FullNumber}, количество адресов - {episode.Addresses.Count}\n");
+
+					foreach (var address in episode.Addresses)
+					{
+						result.Add($"\t\t\tНазвание адреса - {address.Name}, адрес - {address.Address.ToString()}, озвучка - {address.VoiceOver}, длительность - {address.TotalDuration}, джамперов - {address.Jumpers.Count}");
+
+						foreach (var jumper in address.Jumpers)
+						{
+							result.Add($"\t\t\t\tДжампер №{jumper.Number}, режим джампера - {jumper.JumperMode}, время начала - {jumper.StartTime}, время конца - {jumper.EndTime}, длительность - {jumper.Duration}");
+						}
+						
+					}
+					result.Add("\n\n");
+				}
+			}
+
+			var LogName = $"{DateTime.Today:d}_{DateTime.Now.Hour:00}.{DateTime.Now.Minute:00}.{DateTime.Now.Second:00}.txt";
+			var filePath = $"{AppPath}\\{DevelopmentDataFolderName}\\CheckSP-{LogName}";
+
+			using (var fs = new FileStream(filePath, System.IO.FileMode.Create))
+			{
+				fs.Dispose();
+			}
+
+			using (var sw = new StreamWriter(filePath))
+			{
+				foreach (var str in result)
+				{
+					sw.WriteLine(str);
+				}
+				sw.Dispose();
+			}
+
+			return true;
+		}
+
+		public bool CanCheckSP => Films.Any(f => f.Name == "Южный парк");
 
 		#endregion
 

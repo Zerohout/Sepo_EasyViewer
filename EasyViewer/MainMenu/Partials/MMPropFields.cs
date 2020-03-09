@@ -22,10 +22,12 @@ namespace EasyViewer.MainMenu.ViewModels
         private int _availableEpisodesCount;
         private int? _watchingEpisodesCount;
         private List<Episode> _checkedEpisodes = new List<Episode>();
+        private Film _selectedRemovingFilm;
         private BindableCollection<string> _commandList = new BindableCollection<string>
         {
 	        "Добавить \"Южный Парк\"",
 			"Проверить длительности эпизодов",
+            "Проверить содержимое фильма \"Южный Парк\"",
 			"Удалить все фильмы"
 		};
 
@@ -89,6 +91,19 @@ namespace EasyViewer.MainMenu.ViewModels
             }
         }
 
+        /// <summary>
+        /// Выбранный фильм для удаления
+        /// </summary>
+        public Film SelectedRemovingFilm
+        {
+	        get => _selectedRemovingFilm;
+	        set
+	        {
+		        _selectedRemovingFilm = value;
+		        NotifyOfPropertyChange(() => SelectedRemovingFilm);
+                NotifyOfPropertyChange(() => CanRemoveSelectedFilm);
+	        }
+        }
 
         /// <summary>
         /// Список выбранных эпизодов
@@ -104,7 +119,7 @@ namespace EasyViewer.MainMenu.ViewModels
                 NotifyOfPropertyChange(() => CheckedEpisodes);
             }
         }
-
+        
         /// <summary>
         /// Количество доступных к просмотру эпизодов
         /// </summary>

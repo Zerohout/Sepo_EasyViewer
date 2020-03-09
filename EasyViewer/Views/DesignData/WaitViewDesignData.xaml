@@ -1,5 +1,12 @@
 ﻿<vm:WaitViewModel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:vm="clr-namespace:EasyViewer.ViewModels">
+                    xmlns:vm="clr-namespace:EasyViewer.ViewModels"
+                    CurrentSeasonValue="5"
+                    MaxSeasonValue="23"
+                    CurrentEpisodeValue="3"
+                    MaxEpisodeValue="297"
+                    CurrentAddressNumber="1"
+                    MaxAddressNumber="5"
+                    LoadingStatus="Добавление сезонов">
     
 </vm:WaitViewModel>

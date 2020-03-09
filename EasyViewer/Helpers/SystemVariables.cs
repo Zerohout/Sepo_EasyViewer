@@ -92,6 +92,17 @@
         public static AppValues AppVal = new AppValues();
 
         /// <summary>
+        /// Статус загрузки
+        /// </summary>
+        public enum LoadingStatus
+        {
+            Create_Seasons,
+            Create_Episodes,
+            Create_Addresses,
+            Add_Durations
+        }
+
+        /// <summary>
         /// Тип фильма
         /// </summary>
         public enum FilmType

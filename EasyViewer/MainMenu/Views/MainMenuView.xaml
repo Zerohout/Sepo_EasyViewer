@@ -111,10 +111,10 @@
                     <ColumnDefinition Width="17.5*" />
                 </Grid.ColumnDefinitions>
                 <Button
-                    cal:Message.Attach="[Event MouseDoubleClick]=[Action SecretAction]"
                     Grid.Row="1"
                     Grid.Column="1"
                     MinHeight="1"
+                    cal:Message.Attach="[Event MouseDoubleClick]=[Action SecretAction]"
                     Style="{StaticResource ExitButtonStyle}" />
             </Grid>
             <Grid
@@ -292,7 +292,8 @@
         <Grid
             Grid.Row="1"
             Grid.Column="1"
-            Grid.ColumnSpan="2">
+            Grid.ColumnSpan="2"
+            Visibility="{Binding SecretVisibility}">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -302,10 +303,58 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <ListBox
+                Grid.Column="0"
                 Margin="5"
                 ItemsSource="{Binding CommandList}"
-                SelectedItem="{Binding SelectedCommand}"
-                Visibility="{Binding SecretVisibility}" />
+                SelectedItem="{Binding SelectedCommand}" />
+            <Grid 
+                Grid.Column="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock 
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Text="Выбранный фильм: "
+                    Style="{StaticResource MMDefaultTBlockStyle}"></TextBlock>
+                <ComboBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding Films}"
+                    SelectedItem="{Binding SelectedRemovingFilm}">
+                    <ComboBox.ItemTemplate>
+                        <ItemContainerTemplate>
+                            <StackPanel>
+                                <TextBlock
+                                    Style="{StaticResource CCComboBoxTBlockItemStyle}"
+                                    Text="{Binding Name}" />
+                            </StackPanel>
+                        </ItemContainerTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button
+                    x:Name="RemoveSelectedFilm"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="2"
+                    Padding="15"
+                    Background="IndianRed"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                    <TextBlock
+                        FontSize="20"
+                        Style="{StaticResource MMDefaultTBlockStyle}"
+                        Text="Удалить" />
+                </Button>
+            </Grid>
         </Grid>
 
         <!--#endregion-->

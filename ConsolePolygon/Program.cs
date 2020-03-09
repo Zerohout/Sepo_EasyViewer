@@ -5,7 +5,9 @@
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using LiteDB;
+	using System.Security.Cryptography;
+	using System.Text;
+	using LiteDB;
     using Models.SerialModels;
     using Models.SettingModels;
     using Newtonsoft.Json;
@@ -33,21 +35,27 @@
         {
             rnd = new Random();
 
+
+           
+
+           
+            Console.ReadLine();
+
             // WriteLine($"{DateTime.Today:d}_{DateTime.Now.Hour}.{DateTime.Now.Minute}.{DateTime.Now.Second}.txt");
             //CreatorTest.CreateSouthPark();
             //ReadKey();
 
-            
 
-            var ws1 = LoadOrCreateWatchingSettings();
-            var ws2 = LoadOrCreateWatchingSettings();
-            ws1.DefaultEpCount = 5;
 
-            
+            // var ws1 = LoadOrCreateWatchingSettings();
+            // var ws2 = LoadOrCreateWatchingSettings();
+            // ws1.DefaultEpCount = 5;
 
-            Console.WriteLine($"1-й тест - {IsEquals(ws1,ws2)}");
-            Console.WriteLine($"2-й тест - {JsonConvert.SerializeObject(ws1)}");
-            Console.WriteLine($"3-й тест - {JsonConvert.SerializeObject(ws2)}");
+
+
+            //Console.WriteLine($"1-й тест - {IsEquals(ws1,ws2)}");
+            // Console.WriteLine($"2-й тест - {JsonConvert.SerializeObject(ws1)}");
+            // Console.WriteLine($"3-й тест - {JsonConvert.SerializeObject(ws2)}");
 
 
         }
@@ -128,7 +136,7 @@
         }
 
 
-
+        
 
     }
 }

@@ -9,7 +9,7 @@
     {
         public void Accept()
         {
-            if (GetHash(pass) == "348E74A75DFE134CFED7724A845EC689")
+            if (GetHash(pass) == "0E87C1DC8B10CF2989AC77169E1C961B")
             {
                 TryClose(true);
             }

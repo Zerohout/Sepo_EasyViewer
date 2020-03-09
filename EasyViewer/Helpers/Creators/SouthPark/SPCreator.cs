@@ -4,7 +4,7 @@
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
-	using System.Windows;
+	using System.Windows.Forms;
 	using Models.FilmModels;
 	using ViewModels;
 	using Vlc.DotNet.Wpf;
@@ -12,15 +12,12 @@
 	using static SPOnline;
 	using static SPFreehat;
 	using static GlobalMethods;
+	using static CreatorMethods;
+	using Application = System.Windows.Application;
 
 	public static class SPCreator
 	{
-		/// <summary>
-		/// Создать фильм Южный Парк
-		/// </summary>
-		/// <param name="wvm">Представление окна ожидания</param>
-		/// <returns></returns>
-		public static Film CreateSP(WaitViewModel wvm)
+		public static void CreateSP(WaitViewModel wvm)
 		{
 			Application.Current.Dispatcher.Invoke(() =>
 			{
@@ -28,388 +25,275 @@
 				Vlc.SourceProvider.CreatePlayer(VlcDataPath);
 			});
 
-			var result = new Film
+			var films = GetDbCollection<Film>();
+
+			if (films.All(f => f.Name != SP))
 			{
-				Name = SP,
-				Description = "«Южный парк» (он же South Park и Саус Парк) — фильм картинками, " +
-							  "который отличается от других мультиков тем, что градус треша и угара в нем зашкаливает, " +
-							  "сферически воплощаясь в каждом из жителей маленького и нифига не тихого городка в Колорадо, " +
-							  "которые окружают главных героев: Эрик Картман — маленький расист с зашкаливающим чувством величия " +
-							  "и неуемной жаждой действий. Стэн Марш — обладатель критичного ума, офигевающий над своим папой " +
-							  "и креативным долбозвоном в одном лице, Рэнди Маршем. Кайл Брофловски — рыжеволосый и ироничный " +
-							  "персонаж, чье здравомыслие с лихвой уравнивает общую шизофрению происходящего (постоянный предмет " +
-							  "нападок жирдяя) и главный убиванец фильма, Кенни МакКормик — бичеватый индивид с капюшоном на " +
-							  "все лицо и пошловатой логикой микроскопического эротомана. Не менее колоритен ныне заменивший " +
-							  "вечно подыхающего коротыша другой мегаломаньяк — Профессор Хаос, ненавистник пиписек и " +
-							  "латентный гомосексуалист — Баттерс Стотч.",
-				FilmType = FilmType.Мультсериал,
-				Seasons = new List<Season>(CreateSPSeasons(wvm, SP) ?? new List<Season>())
-			};
+				var result = new Film
+				{
+					Name = SP,
+					Description = "«Южный парк» (он же South Park и Саус Парк) — фильм картинками, " +
+								  "который отличается от других мультиков тем, что градус треша и угара в нем зашкаливает, " +
+								  "сферически воплощаясь в каждом из жителей маленького и нифига не тихого городка в Колорадо, " +
+								  "которые окружают главных героев: Эрик Картман — маленький расист с зашкаливающим чувством величия " +
+								  "и неуемной жаждой действий. Стэн Марш — обладатель критичного ума, офигевающий над своим папой " +
+								  "и креативным долбозвоном в одном лице, Рэнди Маршем. Кайл Брофловски — рыжеволосый и ироничный " +
+								  "персонаж, чье здравомыслие с лихвой уравнивает общую шизофрению происходящего (постоянный предмет " +
+								  "нападок жирдяя) и главный убиванец фильма, Кенни МакКормик — бичеватый индивид с капюшоном на " +
+								  "все лицо и пошловатой логикой микроскопического эротомана. Не менее колоритен ныне заменивший " +
+								  "вечно подыхающего коротыша другой мегаломаньяк — Профессор Хаос, ненавистник пиписек и " +
+								  "латентный гомосексуалист — Баттерс Стотч.",
+					FilmType = SystemVariables.FilmType.Мультсериал
+				};
+
+				AddFilmToDb(result);
+			}
+
+
+			var stopwatch = new Stopwatch();
+			stopwatch.Start();
+			
+			CreateSPSeasons(GetFilmFromDb(SP), wvm, stopwatch);
+			CreateSPEpisodes(GetFilmFromDb(SP), wvm, stopwatch);
+			CreateSPAddresses(GetFilmFromDb(SP), wvm, stopwatch);
+			AddSPAddressesDurations(GetFilmFromDb(SP), wvm, stopwatch);
 
 			Vlc.Dispose();
-			return result;
 		}
 
-		/// <summary>
-		/// Создать список сезонов фильма Южный парк
-		/// </summary>
-		/// <param name="wvm"></param>
-		/// <returns></returns>
-		private static List<Season> CreateSPSeasons(WaitViewModel wvm, string filmName)
-		{
-			wvm.MaximumValue = 297;
-			var result = new List<Season>();
-			var stopWatch = new Stopwatch();
-			stopWatch.Start();
 
-			for (var i = 1; i <= 22; i++)
-			{
-				if (AddingFilmToken.IsCancellationRequested) return null;
-				var num = i;
-				result.Add(new Season
-				{
-					Number = num,
-					Description = $"Description of Season_{num}",
-					Episodes = new List<Episode>(CreateSPEpisodes(wvm, num, stopWatch, filmName) ?? new List<Episode>())
-				});
-			}
-
-			return result;
-		}
 
 		/// <summary>
-		/// Создать список эпизодов фильма Южный Парк
+		/// Создать общий список сезонов в фильме (Южный Парк)
 		/// </summary>
-		/// <param name="wvm">Представление окна ожидания</param>
-		/// <param name="seasonNum">Номер эпизода</param>
-		/// <param name="stopwatch">Таймер для окна ожидания</param>
-		/// <returns></returns>
-		private static List<Episode> CreateSPEpisodes(WaitViewModel wvm, int seasonNum, Stopwatch stopwatch, string filmName)
+		/// <param name="film">Фильм (Южный Парк)</param>
+		/// <param name="wvm">Индикатор прогресса загрузки</param>
+		/// <param name="stopwatch">Таймер</param>
+		private static void CreateSPSeasons(Film film, WaitViewModel wvm, Stopwatch stopwatch)
 		{
-			var result = new List<Episode>();
-			var episodesCount = GetSPEpisodesCount(seasonNum);
+			wvm.CurrentLoadingStatus = LoadingStatus.Create_Seasons;
+			if (AddingFilmToken.IsCancellationRequested) return;
+			var seasonsCount = 23;
+			wvm.MaxSeasonValue = seasonsCount;
+			wvm.MaxPercentValue = seasonsCount;
 
-			for (var i = 0; i < episodesCount; i++)
+			for (var i = 0; i < seasonsCount; i++)
 			{
-				if (AddingFilmToken.IsCancellationRequested) return null;
+				if (AddingFilmToken.IsCancellationRequested) return;
 				var num = i + 1;
-				wvm.CurrentValue++;
-				var addressesValue = GetSPEpVoicesCountSPOnline(seasonNum, num) +
-									 GetSPEpVoicesCountSPFreehat(seasonNum, num);
-				wvm.MaxAddressNumber = addressesValue;
-				var addresses = new List<EpAddress>(GetSPEpAddressesSPOnline(seasonNum, num, wvm, stopwatch) ?? new List<EpAddress>());
-				if (AddingFilmToken.IsCancellationRequested) return null;
+				wvm.CurrentSeasonValue++;
+				wvm.CurrentPercentValue++;
 
-				addresses.AddRange(GetSPEpAddressesSPFreehat(seasonNum, num, wvm, stopwatch) ?? new List<EpAddress>());
-				if (AddingFilmToken.IsCancellationRequested) return null;
-				var fullNum = seasonNum * 100 + num;
-				var name = $"{TranslateFileName(filmName)}_S{seasonNum}_E{num}";
-				result.Add(new Episode
+				if (film.Seasons.Any(s => s.Number == num)) continue;
+
+				film.Seasons.Add(new Season
 				{
-					Name = name,
 					Number = num,
-					SeasonNumber = seasonNum,
-					Description = $"Description of {name}",
-					Addresses = new List<EpAddress>(addresses),
-					Address = addresses.First(),
-					PrevChainLink = GetPrevSPChainEpNum(fullNum),
-					NextChainLink = GetNextSPChainEpNum(fullNum),
-					Checked = true,
+					Description = $"Description of Season_{num}"
 				});
-				wvm.CurrentAddressNumber = 0;
-			}
 
-			return result;
-		}
+				UpdateDbCollection(film);
 
-		/// <summary>
-		/// Получить номер предыдущего эпизода в цепи эпизодов
-		/// </summary>
-		/// <param name="epFullNum">Полный номер эпизода</param>
-		/// <returns></returns>
-		private static int GetPrevSPChainEpNum(int epFullNum)
-		{
-			var season = epFullNum / 100;
-			var episode = epFullNum % 100;
-
-			switch (season)
-			{
-				case 2:
-					switch (episode)
-					{
-						case 2:
-							return 113;
-						default:
-							return 0;
-					}
-				case 4:
-					switch (episode)
-					{
-						case 11:
-							return 410;
-						default:
-							return 0;
-					}
-				case 6:
-					switch (episode)
-					{
-						case 7:
-							return 606;
-						default:
-							return 0;
-					}
-				case 10:
-					switch (episode)
-					{
-						case 4:
-							return 1003;
-						case 13:
-							return 1012;
-						default:
-							return 0;
-					}
-				case 11:
-					switch (episode)
-					{
-						case 11:
-							return 1110;
-						case 12:
-							return 1111;
-						default:
-							return 0;
-					}
-				case 12:
-					switch (episode)
-					{
-						case 11:
-							return 1210;
-						default:
-							return 0;
-					}
-				case 14:
-					switch (episode)
-					{
-						case 6:
-							return 1405;
-						case 12:
-							return 1411;
-						case 13:
-							return 1412;
-						default:
-							return 0;
-					}
-				case 15:
-					switch (episode)
-					{
-						case 8:
-							return 1507;
-						default:
-							return 0;
-					}
-				case 17:
-					switch (episode)
-					{
-						case 8:
-							return 1707;
-						case 9:
-							return 1708;
-						default:
-							return 0;
-					}
-				case 18:
-					switch (episode)
-					{
-						case 2:
-							return 1801;
-						case 10:
-							return 1809;
-						default:
-							return 0;
-					}
-				case 19:
-					switch (episode)
-					{
-						case 9:
-							return 1908;
-						case 10:
-							return 1909;
-						default:
-							return 0;
-					}
-				case 22:
-					switch (episode)
-					{
-						case 7:
-							return 2206;
-						case 10:
-							return 2209;
-						default:
-							return 0;
-					}
-				default:
-					return 0;
+				wvm.ElapsedTime = stopwatch.Elapsed;
+				wvm.RemainingTime = stopwatch.Elapsed;
 			}
 		}
 
 		/// <summary>
-		/// Получить номер следующего эпизода в цепи эпизодов
+		/// Создать общий список эпизодов в каждом сезоне фильма (Южный Парк)
 		/// </summary>
-		/// <param name="epFullNum">Полный номер эпизода</param>
-		/// <returns></returns>
-		private static int GetNextSPChainEpNum(int epFullNum)
+		/// <param name="film">Фильм (Южный Парк)</param>
+		/// <param name="wvm">Индикатор прогресса загрузки</param>
+		/// <param name="stopwatch">Таймер</param>
+		private static void CreateSPEpisodes(Film film, WaitViewModel wvm, Stopwatch stopwatch)
 		{
-			var season = epFullNum / 100;
-			var episode = epFullNum % 100;
+			wvm.CurrentLoadingStatus = LoadingStatus.Create_Episodes;
+			if (AddingFilmToken.IsCancellationRequested) return;
+			var seasonsCount = film.Seasons.Count;
+			wvm.MaxPercentValue = seasonsCount;
+			wvm.MaxSeasonValue = seasonsCount;
 
-			switch (season)
+			for (var i = 0; i < seasonsCount; i++)
 			{
-				case 1:
-					switch (episode)
+				if (AddingFilmToken.IsCancellationRequested) return;
+				var seasonNum = i + 1;
+				var episodesCount = GetSPEpisodesCount(seasonNum);
+				wvm.ResetCurrentLoadingData(true);
+				wvm.MaxEpisodeValue = episodesCount;
+				wvm.CurrentSeasonValue++;
+				wvm.CurrentPercentValue++;
+
+				for (var j = 0; j < episodesCount; j++)
+				{
+					if (AddingFilmToken.IsCancellationRequested) return;
+					wvm.CurrentEpisodeValue++;
+					var epNum = j + 1;
+					var epFullNum = seasonNum * 100 + epNum;
+
+					if (film.Episodes.Any(e => e.FullNumber == epFullNum)) continue;
+
+					film.Seasons[i].Episodes.Add(new Episode
 					{
-						case 13:
-							return 202;
-						default:
-							return 0;
-					}
-				case 4:
-					switch (episode)
-					{
-						case 10:
-							return 411;
-						default:
-							return 0;
-					}
-				case 6:
-					switch (episode)
-					{
-						case 6:
-							return 607;
-						default:
-							return 0;
-					}
-				case 10:
-					switch (episode)
-					{
-						case 3:
-							return 1004;
-						case 12:
-							return 1013;
-						default:
-							return 0;
-					}
-				case 11:
-					switch (episode)
-					{
-						case 10:
-							return 1111;
-						case 11:
-							return 1112;
-						default:
-							return 0;
-					}
-				case 12:
-					switch (episode)
-					{
-						case 10:
-							return 1211;
-						default:
-							return 0;
-					}
-				case 14:
-					switch (episode)
-					{
-						case 5:
-							return 1406;
-						case 11:
-							return 1412;
-						case 12:
-							return 1413;
-						default:
-							return 0;
-					}
-				case 15:
-					switch (episode)
-					{
-						case 7:
-							return 1508;
-						default:
-							return 0;
-					}
-				case 17:
-					switch (episode)
-					{
-						case 7:
-							return 1708;
-						case 8:
-							return 1709;
-						default:
-							return 0;
-					}
-				case 18:
-					switch (episode)
-					{
-						case 1:
-							return 1802;
-						case 9:
-							return 1810;
-						default:
-							return 0;
-					}
-				case 19:
-					switch (episode)
-					{
-						case 8:
-							return 1909;
-						case 9:
-							return 1910;
-						default:
-							return 0;
-					}
-				case 22:
-					switch (episode)
-					{
-						case 6:
-							return 2207;
-						case 9:
-							return 2210;
-						default:
-							return 0;
-					}
-				default:
-					return 0;
+						Name = $"Episode {epNum} of {seasonNum} season",
+						Description = $"Description of {epNum} episode of {seasonNum} season",
+						Number = epNum,
+						SeasonNumber = seasonNum
+					});
+
+					UpdateDbCollection(film);
+
+					wvm.ElapsedTime = stopwatch.Elapsed;
+					wvm.RemainingTime = stopwatch.Elapsed;
+				}
 			}
 		}
 
 		/// <summary>
-		/// Получить количество эпизодов в сезоне фильма Южный Парк
+		/// Создать общий список адресов (без длительности) эпизодов в каждом сезоне фильма (Южный Парк)
 		/// </summary>
-		/// <param name="seasonNum">Номер сезона</param>
-		/// <returns></returns>
-		private static int GetSPEpisodesCount(int seasonNum)
+		/// <param name="film">Фильм (Южный Парк)</param>
+		/// <param name="wvm">Индикатор прогресса загрузки</param>
+		/// <param name="stopwatch">Таймер</param>
+		private static void CreateSPAddresses(Film film, WaitViewModel wvm, Stopwatch stopwatch)
 		{
-			switch (seasonNum)
+			wvm.CurrentLoadingStatus = LoadingStatus.Create_Addresses;
+			if (AddingFilmToken.IsCancellationRequested) return;
+			var seasonsCount = film.Seasons.Count;
+
+			wvm.MaxPercentValue = seasonsCount;
+			wvm.MaxSeasonValue = seasonsCount;
+			
+
+			for (var i = 0; i < seasonsCount; i++)
 			{
-				case 1:
-					return 13;
-				case 2:
-					return 18;
-				case 3:
-				case 4:
-				case 6:
-					return 17;
-				case 7:
-					return 15;
-				case 17:
-				case 18:
-				case 19:
-				case 20:
-				case 21:
-				case 22:
-					return 10;
-				default:
-					return 14;
+				if (AddingFilmToken.IsCancellationRequested) return;
+				var season = film.Seasons[i];
+				var seasonNum = season.Number;
+				var episodesCount = season.Episodes.Count;
+				wvm.MaxEpisodeValue = episodesCount;
+				wvm.CurrentSeasonValue++;
+				wvm.ResetCurrentLoadingData(true, true);
+				wvm.CurrentPercentValue++;
+
+				for (var j = 0; j < episodesCount; j++)
+				{
+					if (AddingFilmToken.IsCancellationRequested) return;
+					var episode = film.Seasons[i].Episodes[j];
+					var epNum = episode.Number;
+					var voiceCountSPOnline = GetSPEpVoicesCountSPOnline(seasonNum, episode.Number);
+					var voiceCountSpFreehat = GetSPEpVoicesCountSPFreehat(seasonNum, episode.Number);
+					var addressesCount = voiceCountSpFreehat + voiceCountSPOnline;
+
+					wvm.MaxAddressNumber = addressesCount;
+					wvm.CurrentEpisodeValue++;
+					wvm.ResetCurrentLoadingData(false,true);
+
+					for (var k = 0; k < voiceCountSPOnline; k++)
+					{
+						if (AddingFilmToken.IsCancellationRequested) return;
+						wvm.CurrentAddressNumber++;
+
+						var addressNum = k + 1;
+						var address = GetSPEpAddressSPOnline(seasonNum, epNum, addressNum);
+						if (episode.Addresses.Any(a => a.Address == address)) continue;
+
+						var voice = GetSPEpVoiceNameSPOnline(seasonNum, addressNum);
+
+						film.Seasons[i].Episodes[j].Addresses.Add(new EpAddress
+						{
+							Name = $"online-south-park.ru_{voice}",
+							Address = address,
+							VoiceOver = voice
+						});
+
+						UpdateDbCollection(film);
+					}
+
+					for (var k = 0; k < voiceCountSpFreehat; k++)
+					{
+						if (AddingFilmToken.IsCancellationRequested) return;
+						wvm.CurrentAddressNumber++;
+
+						var addressNum = k + 1;
+						var address = GetSPEpAddressSPFreehat(seasonNum, epNum, addressNum);
+						if (episode.Addresses.Any(a => a.Address == address)) continue;
+
+						var voice = GetSPEpVoiceNameSPFreehat(seasonNum, addressNum);
+
+						film.Seasons[i].Episodes[j].Addresses.Add(new EpAddress
+						{
+							Name = $"sp.freehat.cc_{voice}",
+							Address = address,
+							VoiceOver = voice
+						});
+
+						UpdateDbCollection(film);
+
+						wvm.ElapsedTime = stopwatch.Elapsed;
+						wvm.RemainingTime = stopwatch.Elapsed;
+					}
+
+					if (episode.Address is null)
+					{
+						var addresses = film.Seasons[i].Episodes[j].Addresses;
+						film.Seasons[i].Episodes[j].Address = addresses.First();
+						UpdateDbCollection(film);
+					}
+				}
 			}
 		}
 
+		/// <summary>
+		/// Добавить длительности эпизодов к каждому адресу
+		/// </summary>
+		/// <param name="film">Фильм (Южный Парк)</param>
+		/// <param name="wvm">Индикатор прогресса загрузки</param>
+		/// <param name="stopwatch">Таймер</param>
+		private static void AddSPAddressesDurations(Film film, WaitViewModel wvm, Stopwatch stopwatch)
+		{
+			wvm.CurrentLoadingStatus = LoadingStatus.Add_Durations;
+			if (AddingFilmToken.IsCancellationRequested) return;
+			var seasons = film.Seasons;
+			wvm.MaxPercentValue = seasons.Count;
+			wvm.MaxSeasonValue = seasons.Count;
+			
+			for (var i = 0; i < seasons.Count; i++)
+			{
+				if (AddingFilmToken.IsCancellationRequested) return;
+				var episodes = seasons[i].Episodes;
+				wvm.MaxEpisodeValue = episodes.Count;
+				wvm.CurrentSeasonValue++;
+				wvm.ResetCurrentLoadingData(true, true);
+				wvm.CurrentPercentValue++;
+				
+				for (var j = 0; j < episodes.Count; j++)
+				{
+					if (AddingFilmToken.IsCancellationRequested) return;
+					var addresses = episodes[j].Addresses;
+					wvm.MaxAddressNumber = addresses.Count;
+					wvm.CurrentEpisodeValue++;
+					wvm.ResetCurrentLoadingData(false, true);
+					
+					for (var k = 0; k < addresses.Count; k++)
+					{
+						if (AddingFilmToken.IsCancellationRequested) return;
+						var address = addresses[k];
+						wvm.CurrentAddressNumber++;
+
+						if (address.TotalDuration > new TimeSpan()) continue;
+
+						var duration = GetEpisodeDuration(film.Name, address.Address, episodes[j].FullNumber, wvm,
+							stopwatch);
+
+						film.Seasons[i].Episodes[j].Addresses[k].TotalDuration = duration;
+						film.Seasons[i].Episodes[j].Addresses[k].FilmEndTime = duration;
+
+						UpdateDbCollection(film);
+						wvm.ElapsedTime = stopwatch.Elapsed;
+						wvm.RemainingTime = stopwatch.Elapsed;
+					}
+				}
+			}
+		}
 	}
 }

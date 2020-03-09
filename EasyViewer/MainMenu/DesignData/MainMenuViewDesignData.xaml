@@ -17,6 +17,4 @@
         <filmModels:Film Name="Футурама" />
         <filmModels:Film Name="Удивительный мир Гамбола" />
     </vms:MainMenuViewModel.Films>
-    
-
     </vms:MainMenuViewModel>
