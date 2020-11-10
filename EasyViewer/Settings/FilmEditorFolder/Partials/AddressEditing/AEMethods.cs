@@ -4,10 +4,13 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 	using System;
 	using System.Linq;
 	using System.Threading;
-	using Caliburn.Micro;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using Caliburn.Micro;
 	using EasyViewer.ViewModels;
 	using Helpers;
-	using Vlc.DotNet.Wpf;
+    using LibVLCSharp.Shared;
+    using Vlc.DotNet.Wpf;
 	using static Helpers.SystemVariables;
 
 	public partial class AddressEditingViewModel : Screen
@@ -17,34 +20,28 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 		/// </summary>
 		/// <param name="address">Адрес</param>
 		/// <returns></returns>
-		private bool CheckAddress(Uri address)
+		private async Task<bool> CheckAddress(Uri address)
 		{
-			Vlc = new VlcControl();
-			Vlc.SourceProvider.CreatePlayer(VlcDataPath);
+			var libVlc = new LibVLC();
+			var media = new Media(_libVlc, address);
+            await media.Parse(MediaParseOptions.ParseNetwork);
 
-			VlcPlayer.Play(address);
-
-			while (VlcPlayer.IsPlaying() is false)
-			{
-				Thread.Sleep(100);
-				Thread.Yield();
-
-				if (VlcPlayer.CouldPlay) continue;
-
-				return false;
-			}
-
-			var duration = TimeSpan.FromMilliseconds(VlcPlayer.Length);
-			//Vlc = null;
-			Vlc.Dispose();
-			CurrentAddress.TotalDuration = duration;
-			CurrentAddress.FilmEndTime = duration;
-
+            if (media.ParsedStatus == MediaParsedStatus.Failed)
+            {
+				media.Dispose();
+				libVlc.Dispose();
+                return false;
+            }
+			var duration = media.Duration;
+			CurrentAddressInfo.TotalDuration = TimeSpan.FromMilliseconds(duration);
+			CurrentAddressInfo.FilmEndTime = TimeSpan.FromMilliseconds(duration);
+            media.Dispose();
+            libVlc.Dispose();
 			return true;
 		}
 
 		/// <summary>
-		/// ПРоерить номер джампера на корректность
+		/// Проверить номер джампера на корректность
 		/// </summary>
 		/// <param name="number">Номер джампера</param>
 		/// <returns></returns>
@@ -54,26 +51,45 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 
 			if (Jumpers.Any(j => j.Number == number))
 			{
-				var dvm = new DialogViewModel("Номер уже существует, хотите ли вы поменять их местами?", DialogType.QUESTION);
+				var dvm = new DialogViewModel("Номер уже существует, хотите ли вы поменять их местами?", DialogType.Question);
 
 				WinMan.ShowDialog(dvm);
 
 				switch (dvm.DialogResult)
 				{
-					case DialogResult.YES_ACTION:
-						Jumpers.First(j => j.Number == number).Number = SelectedJumper.Number;
+					case DialogResult.YesAction:
+                        var jumper = Jumpers.First(j => j.Number == number);
+						jumper.Number = SelectedJumper.Number;
+						DbMethods.UpdateDbCollection(jumper);
 						return (true, "Операция успешно завершена");
-					case DialogResult.NO_ACTION:
+					case DialogResult.NoAction:
 						return (false, "Данный номер уже существует");
 					default:
 						return (false, "Операция отменена");
 				}
 			}
 
-			return number <= Jumpers.Count
+			return number > Jumpers.Count
 				? (false, "Все номера должны быть по порядку без пропусков")
 				: (true, "Операция успешно завершена");
 		}
+
+        private void SetJumperFieldsVisibility(JumperMode mode)
+        {
+            switch (mode)
+            {
+                case JumperMode.Skip:
+                case JumperMode.Mute:
+                    VolumeValueVisibility = Visibility.Hidden;
+                    EndValueVisibility = Visibility.Visible;
+                    break;
+                case JumperMode.IncreaseVolume:
+                case JumperMode.LowerVolume:
+                    VolumeValueVisibility = Visibility.Visible;
+                    EndValueVisibility = Visibility.Hidden;
+                    break;
+            }
+        }
 
 		public void NotifyChanges()
 		{

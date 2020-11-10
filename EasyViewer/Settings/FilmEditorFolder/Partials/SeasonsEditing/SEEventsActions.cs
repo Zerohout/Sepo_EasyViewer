@@ -1,166 +1,202 @@
 ﻿// ReSharper disable once CheckNamespace
+
 namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 {
-	using System.Linq;
-	using System.Windows.Controls;
-	using System.Windows.Input;
-	using Caliburn.Micro;
-	using Models.FilmModels;
-	using Newtonsoft.Json;
-	using static Helpers.GlobalMethods;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using Caliburn.Micro;
+    using Models.FilmModels;
+    using Newtonsoft.Json;
+    using static Helpers.GlobalMethods;
+    using static Helpers.DbMethods;
 
-	public partial class SeasonsEditingViewModel : Screen
-	{
-		#region Season actions
+    public partial class SeasonsEditingViewModel : Screen
+    {
+        #region Season actions
 
-		/// <summary>
-		/// Сохранить изменения
-		/// </summary>
-		public void SaveChanges()
-		{
-			if (CanSaveChanges is false) return;
+        /// <summary>
+        /// Сохранить изменения
+        /// </summary>
+        public void SaveChanges()
+        {
+            if (CanSaveChanges is false) return;
 
-			CurrentSeason.Description = SeasonDescription.ToString();
-			UpdateDbSeason(ESVM.SelectedFilm.Name, CurrentSeason);
+            CurrentSeason.Description = SeasonDescription;
+            UpdateDbCollection(CurrentSeason);
 
-			ESVM.ResetSelectedSeason(CurrentSeason);
-			NotifyChanges();
-		}
+            ESVM.ResetSelectedSeason(CurrentSeason);
+            NotifyChanges();
+        }
 
-		public bool CanSaveChanges => HasChanges;
+        public bool CanSaveChanges => HasChanges;
 
-		/// <summary>
-		/// Отменить изменения сезона
-		/// </summary>
-		public void CancelChanges()
-		{
-			if (CanCancelChanges is false) return;
-			SeasonDescription = CurrentSeason.Description.ToString();
-			NotifyChanges();
-		}
+        /// <summary>
+        /// Отменить изменения сезона
+        /// </summary>
+        public void CancelChanges()
+        {
+            if (CanCancelChanges is false) return;
+            SeasonDescription = CurrentSeason.Description;
+            NotifyChanges();
+        }
 
-		public bool CanCancelChanges => HasChanges;
+        public bool CanCancelChanges => HasChanges;
 
-		#endregion
+        #endregion
 
-		#region Episodes actions
-		/// <summary>
-		/// Выбрать первый в списке эпизод (проблема с неактивным ListBox'ом)
-		/// </summary>
-		public void SelectEpisode()
-		{
-			if (CanSelectEpisode is false) return;
-			SelectedEpisode = Episodes.First();
-		}
+        #region Episodes actions
 
-		public bool CanSelectEpisode => Episodes.Count > 0 &&
-										SelectedEpisode == null;
-		/// <summary>
-		/// Добавить эпизоды
-		/// </summary>
-		public void AddEpisodes()
-		{
-			var num = Episodes.Count;
-			for (var i = 0; i < AddingEpisodeValue; i++)
-			{
-				var number = ++num;
-				var name = $"{TranslateFileName(ESVM.SelectedFilm.Name)}_S{CurrentSeason.Number}_E{number}";
-				CurrentSeason.Episodes.Add(new Episode
-				{
-					Name = name,
-					SeasonNumber = CurrentSeason.Number,
-					Number = number
-				});
-			}
+        /// <summary>
+        /// Выбрать первый в списке эпизод (проблема с неактивным ListBox'ом)
+        /// </summary>
+        public void SelectEpisode()
+        {
+            if (CanSelectEpisode is false) return;
+            SelectedEpisode = Episodes.First();
+        }
 
-			UpdateDbSeason(ESVM.SelectedFilm.Name,CurrentSeason);
-			SelectedEpisode = Episodes.LastOrDefault();
-			NotifyOfPropertyChange(() => Episodes);
-		}
-		/// <summary>
-		/// Редактировать выбранный эпизод
-		/// </summary>
-		public void EditEpisode()
-		{
-			if (CanEditEpisode is false) return;
-			ESVM.ResetSelectedEpisode(SelectedEpisode);
-		}
+        public bool CanSelectEpisode => Episodes.Count > 0 &&
+                                        SelectedEpisode == null;
 
-		public bool CanEditEpisode => SelectedEpisode != null;
-		/// <summary>
-		/// Удалить последний эпизод
-		/// </summary>
-		public void RemoveEpisode()
-		{
-			if (CanRemoveEpisode is false) return;
+        /// <summary>
+        /// Добавить эпизоды
+        /// </summary>
+        public void AddEpisodes()
+        {
+            var number = Episodes.Count;
+            var lastNumber = Episodes.LastOrDefault()?.Number ?? 0;
+            var episodes = new List<Episode>();
+            var name = $"{TranslateFileName(ESVM.SelectedFilm.Name)}_S{CurrentSeason.Number}_E";
+            for (var i = 0; i < AddingEpisodeValue; i++)
+            {
+                if (number > 0 && number != lastNumber)
+                {
+                    for (var j = 1; j <= lastNumber; j++)
+                    {
+                        if (Episodes.Any(e => e.Number == j)
+                            || episodes.Any(e => e.Number == j)) continue;
+                        episodes.Add(new Episode
+                        {
+                            Name = name + j,
+                            Number = j,
+                            Season = CurrentSeason,
+                            Film = ESVM.SelectedFilm
+                        });
+                        lastNumber++;
+                        break;
+                    }
 
-			CurrentSeason.Episodes.Remove(Episodes.Last());
-			UpdateDbSeason(ESVM.SelectedFilm.Name,CurrentSeason);
-			SelectedEpisode = Episodes.LastOrDefault();
-			NotifyOfPropertyChange(() => Episodes);
-		}
+                    continue;
+                }
 
-		public bool CanRemoveEpisode => Episodes.Count > 0;
-		/// <summary>
-		/// Сбросить выбор эпизода
-		/// </summary>
-		public void CancelSelection()
-		{
-			if (CanCancelSelection is false) return;
-			SelectedEpisode = null;
-		}
+                episodes.Add(new Episode
+                {
+                    Name = name + ++number,
+                    Number = number,
+                    Season = CurrentSeason,
+                    Film = ESVM.SelectedFilm,
+                });
+                lastNumber++;
+            }
 
-		public bool CanCancelSelection => SelectedEpisode != null;
+            InsertEntityListToDb(episodes);
+            Episodes = new BindableCollection<Episode>(CurrentSeason.Episodes);
+            SelectedEpisode = Episodes.LastOrDefault();
+        }
 
-		#endregion
+        /// <summary>
+        /// Редактировать выбранный эпизод
+        /// </summary>
+        public void EditEpisode()
+        {
+            if (CanEditEpisode is false) return;
+            ESVM.ResetSelectedEpisode(SelectedEpisode);
+        }
 
-		#region Total actions
+        public bool CanEditEpisode => SelectedEpisodes.Count == 1;
 
-		/// <summary>
-		/// Действие при нажатии на клавиши
-		/// </summary>
-		/// <param name="eventArgs"></param>
-		public void KeyDown(object eventArgs)
-		{
+        /// <summary>
+        /// Удалить выбранный эпизод
+        /// </summary>
+        public void DeleteSelectedEpisodes()
+        {
+            if (CanDeleteSelectedEpisodes is false) return;
 
-		}
+            for (var i = 0; i < SelectedEpisodes.Count; i++)
+            {
+                FullyEpisodeDeleting(SelectedEpisodes[i]);
+            }
 
-		/// <summary>
-		/// Проверка на ввод числовых данных
-		/// </summary>
-		/// <param name="e"></param>
-		public void NumericValidation(KeyEventArgs e)
-		{
-			e.Handled = (e.Key.GetHashCode() >= 34 && e.Key.GetHashCode() <= 43 ||
-						 e.Key.GetHashCode() >= 74 && e.Key.GetHashCode() <= 83) is false;
-		}
-		/// <summary>
-		/// Двойной клик по текстовому полю
-		/// </summary>
-		/// <param name="sender"></param>
-		public void TBoxDoubleClick(TextBox sender)
-		{
-			sender.SelectAll();
-		}
+            Episodes = new BindableCollection<Episode>(CurrentSeason.Episodes);
+            SelectedEpisode = Episodes.LastOrDefault();
+        }
 
-		/// <summary>
-		/// Изменение выбора в ListBox
-		/// </summary>
-		/// <param name="sender"></param>
-		public void SelectionChanged(ListBox sender)
-		{
-			sender.ScrollIntoView(sender.SelectedItem);
-			NotifyOfPropertyChange(() => CanCancelSelection);
-		}
-		/// <summary>
-		/// Действие при изменении текста
-		/// </summary>
-		public void TextChanged()
-		{
-			NotifyChanges();
-		}
+        public bool CanDeleteSelectedEpisodes => SelectedEpisodes.Count > 0;
 
-		#endregion
+        /// <summary>
+        /// Сбросить выбор эпизода
+        /// </summary>
+        public void CancelSelection()
+        {
+            if (CanCancelSelection is false) return;
+            SelectedEpisode = null;
+        }
 
-	}
+        public bool CanCancelSelection => SelectedEpisodes.Count > 0;
+
+        #endregion
+
+        #region Total actions
+
+        /// <summary>
+        /// Действие при нажатии на клавиши
+        /// </summary>
+        /// <param name="eventArgs"></param>
+        public void KeyDown(object eventArgs)
+        {
+        }
+
+        /// <summary>
+        /// Проверка на ввод числовых данных
+        /// </summary>
+        /// <param name="e"></param>
+        public void NumericValidation(KeyEventArgs e)
+        {
+            e.Handled = (e.Key.GetHashCode() >= 34 && e.Key.GetHashCode() <= 43 ||
+                         e.Key.GetHashCode() >= 74 && e.Key.GetHashCode() <= 83) is false;
+        }
+
+        /// <summary>
+        /// Двойной клик по текстовому полю
+        /// </summary>
+        /// <param name="sender"></param>
+        public void TBoxDoubleClick(TextBox sender)
+        {
+            sender.SelectAll();
+        }
+
+        /// <summary>
+        /// Изменение выбора в ListBox
+        /// </summary>
+        /// <param name="sender"></param>
+        public void SelectionChanged(ListBox sender)
+        {
+            SelectedEpisodes = new BindableCollection<Episode>(sender.SelectedItems.Cast<Episode>());
+            if (SelectedEpisodes.Count == 1) sender.ScrollIntoView(sender.SelectedItem);
+        }
+
+       
+        /// <summary>
+        /// Действие при изменении текста
+        /// </summary>
+        public void TextChanged()
+        {
+            NotifyChanges();
+        }
+
+        #endregion
+    }
 }

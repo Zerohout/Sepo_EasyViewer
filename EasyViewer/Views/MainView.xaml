@@ -17,6 +17,7 @@
     ShowDialogsOverTitleBar="False"
     UseNoneWindowStyle="True"
     WindowStartupLocation="CenterScreen"
+    WindowState="{Binding WindowState}"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>

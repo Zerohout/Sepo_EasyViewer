@@ -11,38 +11,6 @@
 	public static class CreatorMethods
 	{
 		/// <summary>
-		/// Получение длительноси фильма
-		/// </summary>
-		/// <param name="filmName">Название фильма</param>
-		/// <param name="address">Адрес фильма</param>
-		/// <param name="fullNumber">Полный номер эпизода (для логирования ошибки)</param>
-		/// <returns></returns>
-		public static TimeSpan GetEpisodeDuration(string filmName, Uri address, int? fullNumber, WaitViewModel wvm, Stopwatch stopwatch)
-		{
-			VlcPlayer.Play(address);
-
-			while (!VlcPlayer.IsPlaying())
-			{
-				Thread.Sleep(50);
-				Thread.Yield();
-				wvm.RemainingTime = stopwatch.Elapsed;
-				if (VlcPlayer.CouldPlay) continue;
-
-				LogError(address, fullNumber, filmName);
-
-				VlcPlayer.Stop();
-
-				return new TimeSpan();
-			}
-
-			var result = TimeSpan.FromMilliseconds(VlcPlayer.Length);
-
-			VlcPlayer.Stop();
-			Thread.Yield();
-
-			return result;
-		}
-		/// <summary>
 		/// Запись ошибки в файл
 		/// </summary>
 		/// <param name="address">Некорректный адрес</param>
@@ -96,6 +64,8 @@
 				case 22:
 				case 23:
 					return 10;
+				case 24:
+                    return 1;
 				default:
 					return 14;
 			}

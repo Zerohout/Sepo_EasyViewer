@@ -12,10 +12,8 @@
 
     public class SettingsViewModel : Conductor<Screen>.Collection.OneActive
     {
-
         public SettingsViewModel()
         {
-
         }
 
         protected override void OnInitialize()
@@ -29,9 +27,9 @@
             Settings.Clear();
             Settings.AddRange(new List<Screen>
             {
-                new WatchingSettingsViewModel{DisplayName = "Основные настройки", Parent = this},
-                new EditorSelectorViewModel{DisplayName = "Редактор фильмов", Parent = this},
-                new ViewingsSettingsViewModel{DisplayName = "Настройки просмотра", Parent = this}
+                new WatchingSettingsViewModel {DisplayName = "Основные настройки", Parent = this},
+                new EditorSelectorViewModel {DisplayName = "Редактор фильмов", Parent = this},
+                new ViewingsSettingsViewModel {DisplayName = "Настройки просмотра", Parent = this}
             });
         }
 
@@ -93,46 +91,30 @@
         {
             foreach (var activeItem in Settings)
             {
-                if (activeItem is EditorSelectorViewModel ce)
-                {
-                    if (ce.ActiveItem is ISettingsViewModel CEsvm)
-                    {
-                        if (CancelBackToMainMenu(CEsvm) is true)
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                if (activeItem is ISettingsViewModel svm)
-                {
-                    if (CancelBackToMainMenu(svm) is true)
-                    {
-                        return;
-                    }
-                }
+                activeItem.TryClose();
             }
 
             ActiveItem?.TryClose();
-            ((MainViewModel)Parent).ChangeActiveItem(new MainMenuViewModel());
+            ((MainViewModel) Parent).ChangeActiveItem(new MainMenuViewModel());
         }
 
         private bool CancelBackToMainMenu(ISettingsViewModel svm)
         {
             if (svm.HasChanges)
             {
-                var dvm = new DialogViewModel($"В меню \"{svm.DisplayName}\" имеются не сохраненные изменения\nСохранить их?",
-                                              DialogType.SAVE_CHANGES);
+                var dvm = new DialogViewModel(
+                    $"В меню \"{svm.DisplayName}\" имеются не сохраненные изменения\nСохранить их?",
+                    DialogType.SaveChanges);
 
                 WinMan.ShowDialog(dvm);
 
                 switch (dvm.DialogResult)
                 {
-                    case DialogResult.YES_ACTION:
+                    case DialogResult.YesAction:
                         svm.SaveChanges();
                         svm.TryClose();
                         break;
-                    case DialogResult.NO_ACTION:
+                    case DialogResult.NoAction:
                         svm.TryClose();
                         break;
                     default:

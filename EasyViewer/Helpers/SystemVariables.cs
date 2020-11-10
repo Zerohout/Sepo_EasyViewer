@@ -17,7 +17,8 @@
         public const string MMBackgroundOnExitUri = "../../Resources/Images/HDMMBackgroundOnExit.png";
         public const string DefaultLogoImageName = "DefaultLogo.png";
 
-        public const string NewFilmName = "Новый_фильм";
+
+        public const string NewFilmName = "_Новый_фильм";
         public const string SP = "Южный парк";
 		public static CancellationTokenSource AddingFilmCancellationTokenSource;
 		public static CancellationToken AddingFilmToken;
@@ -74,20 +75,12 @@
         /// </summary>
         public static WindowManager WinMan = new WindowManager();
 
-        /// <summary>
-        /// Главный таймер
-        /// </summary>
-        public static Timer MainTimer = new Timer();
-
         public static IntPtr HWND;
         /// <summary>
         /// Регистратор горячий клавиш
         /// </summary>
         public static HotkeysRegistrator HotReg;
 
-        public static VlcControl Vlc;
-
-        public static VlcMediaPlayer VlcPlayer => Vlc?.SourceProvider.MediaPlayer;
 
         public static AppValues AppVal = new AppValues();
 
@@ -96,10 +89,10 @@
         /// </summary>
         public enum LoadingStatus
         {
-            Create_Seasons,
-            Create_Episodes,
-            Create_Addresses,
-            Add_Durations
+            CreatingSeasons,
+            CreatingEpisodes,
+            CreatingAddresses,
+            AddingDurations
         }
 
         /// <summary>
@@ -123,31 +116,31 @@
             /// <summary>
             /// Сохранение изменений/данных
             /// </summary>
-            SAVE_CHANGES,
+            SaveChanges,
             /// <summary>
             /// Отмена изменений
             /// </summary>
-            CANCEL_CHANGES,
+            CancelChanges,
             /// <summary>
             /// Удаление объекта
             /// </summary>
-            REMOVE_OBJECT,
+            RemoveObject,
             /// <summary>
             /// Перезапись файла
             /// </summary>
-            OVERWRITE_FILE,
+            OverwriteFile,
             /// <summary>
             /// Вопрос пользователю
             /// </summary>
-            QUESTION,
+            Question,
             /// <summary>
             /// Информационное окно
             /// </summary>
-            INFO,
+            Info,
             /// <summary>
             /// Обработка ошибки
             /// </summary>
-            ERROR
+            Error
         }
 
         /// <summary>
@@ -158,30 +151,15 @@
             /// <summary>
             /// Положительный результат
             /// </summary>
-            YES_ACTION,
+            YesAction,
             /// <summary>
             /// Отрицательный результат
             /// </summary>
-            NO_ACTION,
+            NoAction,
             /// <summary>
             /// Результат отмены
             /// </summary>
-            CANCEL_ACTION
-        }
-
-        /// <summary>
-        /// Режим работы видеоплеера
-        /// </summary>
-        public enum VideoPlayerMode
-        {
-            /// <summary>
-            /// Проигрывание
-            /// </summary>
-            Viewing,
-            /// <summary>
-            /// Предпросмотр
-            /// </summary>
-            Preview
+            CancelAction
         }
 
         /// <summary>
@@ -207,14 +185,7 @@
             LowerVolume
         }
 
-        public enum SPVoices
-        {
-            MTV,
-            Paramount,
-            Original,
-            Goblin,
-
-        }
+        public static bool IsEditDefaultAddressInfo { get; set; }
 
        public static Dictionary<string, string> TranslitDictionary = new Dictionary<string, string>
        {

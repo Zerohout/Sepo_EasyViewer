@@ -6,7 +6,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 	using Caliburn.Micro;
 	using Models.FilmModels;
 	using Newtonsoft.Json;
-	using static Helpers.GlobalMethods;
+	using static Helpers.DbMethods;
 
 	public partial class EpisodeEditingViewModel : Screen
 	{
@@ -31,7 +31,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 		public void SaveChanges()
 		{
 			if (CanSaveChanges is false) return;
-			UpdateDbEpisode(CurrentEpisode);
+			UpdateDbCollection(CurrentEpisode);
 			EpisodeSnapshot = JsonConvert.SerializeObject(CurrentEpisode);
 			NotifyChanges();
 		}

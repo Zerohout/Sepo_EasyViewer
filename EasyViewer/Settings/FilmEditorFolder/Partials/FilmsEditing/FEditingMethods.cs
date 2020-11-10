@@ -19,8 +19,8 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 		private void NotifyEditingButtons()
 		{
 			NotifyOfPropertyChange(() => CanSelectSeason);
-			NotifyOfPropertyChange(() => CanEditSeason);
-			NotifyOfPropertyChange(() => CanRemoveSeason);
+			NotifyOfPropertyChange(() => CanModifySeason);
+			NotifyOfPropertyChange(() => CanDeleteSelectedSeasons);
 			NotifyOfPropertyChange(() => CanCancelSelection);
 		}
 

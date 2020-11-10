@@ -15,7 +15,8 @@
         public SeasonsEditingViewModel(Season season)
         {
             CurrentSeason = season;
-            SelectedEpisode = Episodes?.FirstOrDefault();
+            Episodes = new BindableCollection<Episode>(season.Episodes);
+            SelectedEpisode = Episodes.FirstOrDefault();
             SeasonDescription = season.Description;
             NotifyOfPropertyChange(() => CanSelectEpisode);
 

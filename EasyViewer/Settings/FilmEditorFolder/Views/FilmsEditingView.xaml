@@ -7,6 +7,7 @@
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="clr-namespace:EasyViewer.Helpers"
     cal:Bind.AtDesignTime="True"
     cal:Message.Attach="[Event PreviewKeyDown]=[Action KeyDown($eventArgs)]"
     d:DataContext="{d:DesignData Source=../DesignData/FilmsEditingViewDesignData.xaml}"
@@ -160,10 +161,29 @@
             <ListBox
                 Grid.Row="1"
                 Grid.Column="0"
+                SelectionMode="Extended"
                 Margin="5"
-                cal:Message.Attach="[Event SelectionChanged]=[Action SelectionChanged($source)]; [Event MouseDoubleClick]=[Action EditSeason()]"
+                
                 ItemsSource="{Binding Seasons, UpdateSourceTrigger=PropertyChanged}"
-                SelectedItem="{Binding SelectedSeason, UpdateSourceTrigger=PropertyChanged}">
+                SelectedItem="{Binding SelectedSeason, UpdateSourceTrigger=PropertyChanged}"
+                >
+                
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.MouseDoubleClick">
+                        <cal:ActionMessage MethodName="ModifySeason">
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.SelectionChanged">
+                        <cal:ActionMessage MethodName="SelectionChanged">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <i:EventTrigger EventName="IsEnabledChanged">
+                        <cal:ActionMessage MethodName="IsEnabledChangedAction">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ListBox.ItemTemplate>
                     <ItemContainerTemplate>
                         <TextBlock
@@ -203,7 +223,7 @@
                     Margin="0,2.5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action EditSeason()]"
+                    cal:Message.Attach="[Event Click]=[Action ModifySeason()]"
                     ToolTip="Редактировать выбранный сезон">
                     <iconPacks:PackIconMaterial Style="{StaticResource EditListEditBtnIconStyle}" />
                 </Button>
@@ -211,9 +231,9 @@
                     Margin="0,2.5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action RemoveSeason()]"
+                    cal:Message.Attach="[Event Click]=[Action DeleteSelectedSeasons()]"
                     ToolTipService.ShowOnDisabled="true"
-                    ToolTip="Удалить последний сезон">
+                    ToolTip="Удалить выбранные сезоны">
                     <!--<Button.Style>
                         <Style
                             BasedOn="{StaticResource MetroButton}"

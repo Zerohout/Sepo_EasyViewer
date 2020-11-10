@@ -35,6 +35,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 			}
 			else
 			{
+                if (ActiveItem != null && ActiveItem.IsActive) ActiveItem.TryClose();
 				ActiveItem = vm;
 			}
 		}

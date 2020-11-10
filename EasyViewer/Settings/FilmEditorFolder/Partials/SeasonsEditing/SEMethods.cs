@@ -2,6 +2,7 @@
 namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 {
     using Caliburn.Micro;
+    using Models.FilmModels;
 
     public partial class SeasonsEditingViewModel : Screen
     {
@@ -12,7 +13,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 	    {
 			NotifyOfPropertyChange(() => CanSelectEpisode);
 			NotifyOfPropertyChange(() => CanEditEpisode);
-			NotifyOfPropertyChange(() => CanRemoveEpisode);
+			NotifyOfPropertyChange(() => CanDeleteSelectedEpisodes);
 			NotifyOfPropertyChange(() => CanCancelSelection);
 	    }
 		/// <summary>

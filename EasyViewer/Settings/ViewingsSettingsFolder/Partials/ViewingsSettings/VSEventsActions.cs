@@ -1,113 +1,41 @@
 ﻿// ReSharper disable CheckNamespace
 namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
 {
+    using System;
+    using System.Linq;
     using System.Windows.Controls;
     using System.Windows.Input;
     using Caliburn.Micro;
+    using Helpers;
+    using Models.FilmModels;
 
     public partial class ViewingsSettingsViewModel : Screen
     {
-
-        public void KeyDown(KeyEventArgs e)
+        public void SeasonCheckValidation(Season season)
         {
-            switch (e.KeyboardDevice.Modifiers)
-            {
-                case ModifierKeys.Control:
-                    switch (e.Key)
-                    {
-                        case Key.OemPlus:
-                            if (Episodes.Count > 0)
-                            {
-                                if (EpisodeIndexes.CurrentIndex < EpisodeIndexes.EndIndex)
-                                {
-                                    SelectedEpisode = Episodes[EpisodeIndexes.CurrentIndex + 1];
-                                    //return;
-                                }
-                            }
-                            break;
-                        case Key.OemMinus:
-                            if (Episodes.Count > 0)
-                            {
-                                if (EpisodeIndexes.CurrentIndex > 0)
-                                {
-                                    SelectedEpisode = Episodes[EpisodeIndexes.CurrentIndex - 1];
-                                    //return;
-                                }
-                            }
-
-                            break;
-                    }
-
-                    break;
-                case ModifierKeys.None:
-                    break;
-            }
+            DbMethods.UpdateDbCollection(season);
         }
 
-
-        public void SeasonCheckValidation()
+        public void EpisodeCheckValidation(Episode episode)
         {
-            //CvDbContext.ChangeTracker.DetectChanges();
-
-            //if(CvDbContext.ChangeTracker.HasChanges())
-            //{
-            //	CvDbContext.SaveChanges();
-
-            //}
+            DbMethods.UpdateDbCollection(episode);
         }
 
-        public void EpisodeCheckValidation()
+        public void AddressInfoCheck(AddressInfo addressInfo)
         {
-            //CvDbContext.ChangeTracker.DetectChanges();
-
-            //if(CvDbContext.ChangeTracker.HasChanges())
-            //{
-            //	CvDbContext.SaveChanges();
-
-            //}
+            var episode = DbMethods.GetEpisodeFromDbById(addressInfo.Episode.Id);
+            episode.AddressInfo = addressInfo;
+            DbMethods.UpdateDbCollection(episode);
+            AddressInfoList = new BindableCollection<AddressInfo>(SelectedEpisode.AddressInfoList);
         }
 
-        public void VoiceOverCheck()
+        public void AddressInfoUncheck(AddressInfo addressInfo)
         {
-            //CvDbContext.ChangeTracker.DetectChanges();
-
-            //if (CvDbContext.ChangeTracker.HasChanges())
-            //{
-            //	CvDbContext.SaveChanges();
-            //}
-
+            var episode = DbMethods.GetEpisodeFromDbById(addressInfo.Episode.Id);
+            episode.AddressInfo = AddressInfoList.FirstOrDefault(a => a.Id != addressInfo.Id);
+            DbMethods.UpdateDbCollection(episode);
+            AddressInfoList = new BindableCollection<AddressInfo>(SelectedEpisode.AddressInfoList);
         }
-
-        public void VoiceOverUncheck()
-        {
-
-        }
-
-        #region Selection actions
-
-        public void FilmSelectionChanged()
-        {
-        }
-
-        public void SeasonSelectionChanged(ListBox lb)
-        {
-            lb.ScrollIntoView(lb.SelectedItem);
-        }
-
-        private (int CurrentIndex, int EndIndex) EpisodeIndexes;
-
-        public void EpisodeSelectionChanged(ListBox lb)
-        {
-            lb.ScrollIntoView(lb.SelectedItem);
-        }
-
-        public void VoiceOverSelectionChanged(ListBox lb)
-        {
-            lb.ScrollIntoView(lb.SelectedItem);
-        }
-
-        #endregion
-
 
         #region Cancel selection buttons
         /// <summary>
@@ -128,11 +56,11 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
         public void CancelEpisodeSelection() => SelectedEpisode = null;
         public bool CanCancelEpisodeSelection => SelectedEpisode != null;
 
-        ///// <summary>
-        ///// Снять выделение с выбранной озвучки
-        ///// </summary>
-        //public void CancelVoiceOverSelection() => SelectedVoiceOver = null;
-        //public bool CanCancelVoiceOverSelection => SelectedVoiceOver != null;
+        /// <summary>
+        /// Снять выделение с выбранной озвучки
+        /// </summary>
+        public void CancelVoiceOverSelection() => SelectedAddressInfo = null;
+        public bool CanCancelVoiceOverSelection => SelectedAddressInfo != null;
 
         #endregion
 

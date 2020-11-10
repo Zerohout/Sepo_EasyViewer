@@ -16,8 +16,58 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
         private WatchingSettings _tempWS;
         private BindableCollection<Film> _films = new BindableCollection<Film>();
         private Film _selectedGlobalResetFilm;
-        private bool _isNightHelperShutdownRemarkExpand;
+        private string _selectedNoneRepeatTimeType;
+        private int? _noneRepeatTimeCount;
 
+
+        public ICollection<string> NoneRepeatTimeTypeList => new List<string>
+        {
+            "никогда",
+            "дней",
+            "всегда"
+        };
+
+        /// <summary>
+        /// Выбранный тип времени для запрета повторов просмотренных эпизодов
+        /// </summary>
+        public string SelectedNoneRepeatTimeType
+        {
+            get => _selectedNoneRepeatTimeType;
+            set
+            {
+                if(_selectedNoneRepeatTimeType == value)
+                    return;
+
+                var tempValue = _selectedNoneRepeatTimeType;
+                _selectedNoneRepeatTimeType = value;
+                NotifyOfPropertyChange(() => SelectedNoneRepeatTimeType);
+
+                var temp = ConvertNonRepeatTime(tempValue);
+
+                if(temp == null)
+                    return;
+
+                NoneRepeatTimeCount = temp;
+            }
+        }
+
+        /// <summary>
+        /// Значение времени, в течение которого просмотренный эпизод не будет повторяться
+        /// </summary>
+        public int? NoneRepeatTimeCount
+        {
+            get => _noneRepeatTimeCount;
+            set
+            {
+                if(_noneRepeatTimeCount == value)
+                    return;
+
+                _noneRepeatTimeCount = SetNonRepeatTime(value);
+                NotifyOfPropertyChange(() => NoneRepeatTimeCount);
+            }
+        }
+
+        
 
         /// <summary>
         /// Общие настройки
@@ -68,24 +118,10 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
             {
                 var result = new List<Episode>();
 
-                Films.Where(s => s.Checked)
-                       .ToList().ForEach(s => result.AddRange(s.GetEpisodes(
-                                                                  true, WatchingSettings.NonRepeatDaysInterval ?? -1)));
+                Films.Where(f => f.Checked)
+                    .ToList().ForEach(f => result.AddRange(f.Episodes.Where(e => e.Season.Checked && e.Checked && DateTime.Now.Subtract(
+                        e.LastDateViewed).TotalDays > (WatchingSettings.NonRepeatDaysInterval ?? -1))));
                 return result;
-            }
-        }
-
-        /// <summary>
-        /// Флаг состояния описания интеллектуального выключения
-        /// </summary>
-        public bool IsNightHelperShutdownRemarkExpand
-        {
-            get => _isNightHelperShutdownRemarkExpand;
-            set
-            {
-                _isNightHelperShutdownRemarkExpand = value;
-                NotifyOfPropertyChange(() => IsNightHelperShutdownRemarkExpand);
-                NotifyOfPropertyChange(() => NightHelperShutdownRemarkVisibility);
             }
         }
 
@@ -104,19 +140,17 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
         }
 
         /// <summary>
-        /// Свойство Visibility описания интеллектуального выключения
-        /// </summary>
-        public Visibility NightHelperShutdownRemarkVisibility =>
-            _isNightHelperShutdownRemarkExpand
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-
-        /// <summary>
         /// Фактическая длительность эпизодов по умолчанию
         /// </summary>
         public TimeSpan DefaultEpisodesActualDuration =>
             TimeSpan.FromSeconds(CheckedEpisodes.Take(WatchingSettings.DefaultEpCount ?? 1)
-                                                .Sum(ce => ce.Address.ActualDuration.TotalSeconds));
+                                                .Sum(episode =>
+                                                {
+                                                    var address = episode.AddressInfo;
+                                                    var actDur = address.ActualDuration;
+                                                    address.AddressActualDuration = new TimeSpan();
+                                                    return actDur.TotalSeconds;
+                                                }));
 
         /// <summary>
         /// Видимость элементов зависимых от просмотра эпизодов в случайном порядке

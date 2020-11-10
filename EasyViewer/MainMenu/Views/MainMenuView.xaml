@@ -9,6 +9,7 @@
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:wv="clr-namespace:EasyViewer.Helpers"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     MinWidth="960"
     MinHeight="540"
     cal:Bind.AtDesignTime="True"
@@ -16,6 +17,7 @@
     d:DataContext="{d:DesignData Source=../DesignData/MainMenuViewDesignData.xaml}"
     d:DesignHeight="720"
     d:DesignWidth="1366"
+    
     Focusable="True"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -57,9 +59,20 @@
                                 <ToggleButton
                                     Margin="0,0,10,0"
                                     VerticalAlignment="Center"
-                                    cal:Message.Attach="[Checked] = [Action CheckedValidation()];[Unchecked] = [Action CheckedValidation()]"
                                     IsChecked="{Binding Checked, UpdateSourceTrigger=PropertyChanged}"
                                     Style="{StaticResource MMFilmListTButtonStyle}">
+                                    <i:Interaction.Triggers>
+                                        <wv:RoutedEventTrigger RoutedEvent="ToggleButton.Checked">
+                                            <cal:ActionMessage MethodName="CheckedValidation">
+                                                <cal:Parameter Value="{Binding}"/>
+                                            </cal:ActionMessage>
+                                        </wv:RoutedEventTrigger>
+                                        <wv:RoutedEventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                            <cal:ActionMessage MethodName="CheckedValidation">
+                                                <cal:Parameter Value="{Binding}"/>
+                                            </cal:ActionMessage>
+                                        </wv:RoutedEventTrigger>
+                                    </i:Interaction.Triggers>
                                     <iconPacks:PackIconMaterial
                                         x:Name="ToggleButton"
                                         Width="20"

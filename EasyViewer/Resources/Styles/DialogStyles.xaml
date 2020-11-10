@@ -300,7 +300,134 @@
         <Setter Property="Foreground" Value="Violet"/>
         <Setter Property="Kind" Value="WrenchSolid"/>
     </Style>
-
+    <Style x:Key="PasteBtnIconStyle"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+           TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="Chocolate"/>
+        <Setter Property="Kind" Value="PasteSolid"/>
+    </Style>
+    <Style x:Key="FastBackwardBtnIconStyle"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+           TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="FastBackwardSolid"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="FastForwardBtnIconStyle"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+           TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="FastForwardSolid"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="PlayBtnIconStyle"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+           TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="PlaySolid"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="PauseBtnIconStyle"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+           TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="PauseSolid"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="CopyTimeBtnIconStyle"
+           BasedOn="{StaticResource EditListFontAwesomeBtnIconStyle}"
+           TargetType="iconPacks:PackIconFontAwesome">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="CloneSolid"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="VolumeUpBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="VolumePlus"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="VolumeDownBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="VolumeMinus"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="MuteBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="VolumeOff"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="UnMuteBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="VolumeHigh"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="RefreshConfigBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="Yellow"/>
+        <Setter Property="Kind" Value="CogRefresh"/>
+    </Style>
+    <Style x:Key="IncreaseRateBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="Speedometer"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="DecreaseRateBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="SpeedometerSlow"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="DefaultRateBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="GreenYellow"/>
+        <Setter Property="Kind" Value="SpeedometerMedium"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="SetDefaultAddressBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="MediumOrchid"/>
+        <Setter Property="Kind" Value="ContentSaveCog"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+    </Style>
+    <Style x:Key="AddVolumeJumperBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="Aqua"/>
+        <Setter Property="Kind" Value="MusicNotePlus"/>
+    </Style>
+    <Style x:Key="AddFirstJumperBtnIconStyle"
+           BasedOn="{StaticResource EditListMaterialBtnIconStyle}"
+           TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Foreground" Value="HotPink"/>
+        <Setter Property="Kind" Value="SignDirectionPlus"/>
+    </Style>
     <!--#endregion-->
 
     <!--#endregion-->

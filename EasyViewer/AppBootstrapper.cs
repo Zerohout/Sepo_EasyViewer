@@ -1,7 +1,11 @@
 namespace EasyViewer {
     using System;
     using System.Collections.Generic;
+    using System.Windows.Controls;
     using Caliburn.Micro;
+    using Helpers;
+    using LibVLCSharp.Shared;
+    using Settings.FilmEditorFolder.ViewModels;
     using ViewModels;
 
     public class AppBootstrapper : BootstrapperBase {
@@ -9,6 +13,17 @@ namespace EasyViewer {
 
         public AppBootstrapper() {
             Initialize();
+            Core.Initialize();
+
+            var defaultApplyAvailabilityEffect = ActionMessage.ApplyAvailabilityEffect;
+
+            ActionMessage.ApplyAvailabilityEffect  = context =>
+            {
+                if (context.Source is ListBox)
+                    return true;
+
+                return defaultApplyAvailabilityEffect(context);
+            };
         }
 
         protected override void Configure() {
@@ -17,6 +32,12 @@ namespace EasyViewer {
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.PerRequest<MainViewModel>();
+            container.PerRequest<AddressEditingViewModel>();
+            container.PerRequest<EditorSelectorViewModel>();
+            container.PerRequest<EpisodeEditingViewModel>();
+            container.PerRequest<EpisodesEditorViewModel>();
+            container.PerRequest<FilmsEditingViewModel>();
+            container.PerRequest<SeasonsEditingViewModel>();
         }
 
         protected override object GetInstance(Type service, string key) {

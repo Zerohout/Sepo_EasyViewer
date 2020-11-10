@@ -4,7 +4,8 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 	using System;
 	using System.Linq;
 	using System.Windows;
-	using Caliburn.Micro;
+    using System.Windows.Markup;
+    using Caliburn.Micro;
 	using Models.FilmModels;
 	using Newtonsoft.Json;
 	using static Helpers.GlobalMethods;
@@ -16,6 +17,8 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 		private string _filmSnapshot;
 		private Season _selectedSeason;
 		private int? _addingSeasonValue = 1;
+        private BindableCollection<Season> _seasons;
+        private BindableCollection<Season> _selectedSeasons = new BindableCollection<Season>();
 
 		#region Свойства фильмов
 
@@ -24,6 +27,8 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 		/// </summary>
 		public BindableCollection<FilmType> FilmTypes =>
 			new BindableCollection<FilmType>(Enum.GetValues(typeof(FilmType)).Cast<FilmType>());
+
+        public Film OriginalFilm { get; set; }
 
 		/// <summary>
 		/// Текущий фильм
@@ -36,30 +41,38 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 				_currentFilm = value;
 				NotifyOfPropertyChange(() => CurrentFilm);
 			}
-		}
+        }
 
-		/// <summary>
-		/// Экземпляр фильма для отслеживания изменений
-		/// </summary>
+		///// <summary>
+		///// Экземпляр фильма для отслеживания изменений
+		///// </summary>
 
-		public string FilmSnapshot
-		{
-			get => _filmSnapshot;
-			set
-			{
-				_filmSnapshot = value;
-				NotifyOfPropertyChange(() => FilmSnapshot);
-			}
-		}
+		//public string FilmSnapshot
+		//{
+		//	get => _filmSnapshot;
+		//	set
+		//	{
+		//		_filmSnapshot = value;
+		//		NotifyOfPropertyChange(() => FilmSnapshot);
+		//	}
+		//}
 
 		#endregion
 
 		#region Свойства сезонов
 
-		/// <summary>
-		/// Список сезонов выбранного фильма
-		/// </summary>
-		public BindableCollection<Season> Seasons => new BindableCollection<Season>(CurrentFilm.Seasons);
+        /// <summary>
+        /// Список сезонов выбранного фильма
+        /// </summary>
+        public BindableCollection<Season> Seasons
+        {
+            get => _seasons;
+            set
+            {
+				_seasons = new BindableCollection<Season>(value.OrderBy(s => s.Number));
+				NotifyOfPropertyChange(()=> Seasons);
+            }
+        }
 
 		/// <summary>
 		/// Выбранный сезон
@@ -71,9 +84,23 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 			{
 				_selectedSeason = value;
 				NotifyOfPropertyChange(() => SelectedSeason);
-				NotifyEditingButtons();
+				NotifyOfPropertyChange(() => CanCancelSelection);
+				
 			}
 		}
+        public BindableCollection<Season> SelectedSeasons
+        {
+            get => _selectedSeasons;
+            set
+            {
+                _selectedSeasons = value;
+				NotifyOfPropertyChange(() => SelectedSeasons);
+				NotifyOfPropertyChange(() => CanDeleteSelectedSeasons);
+				NotifyOfPropertyChange(() => CanModifySeason);
+                NotifyOfPropertyChange(() => CanSelectSeason);
+                NotifyOfPropertyChange(() => CanCancelSelection);
+            }
+        }
 
 		#endregion
 
@@ -110,7 +137,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 		/// <summary>
 		/// Флаг наличия изменений
 		/// </summary>
-		public bool HasChanges => IsEquals(CurrentFilm, JsonConvert.DeserializeObject<Film>(FilmSnapshot)) is false;
+		public bool HasChanges => IsEquals(CurrentFilm, OriginalFilm) is false;
 
 		/// <summary>
 		/// Свойство Visibility контролов создания

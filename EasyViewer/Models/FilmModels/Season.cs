@@ -3,74 +3,46 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Helpers;
+    using LiteDB;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Сезон фильма
+    ///     Сезон фильма
     /// </summary>
     [Serializable]
-    public class Season
+    public class Season : IFilmEntity
     {
-        public Season()
-        {
-            Episodes = new List<Episode>();
-        }
+        public int Id { get; set; }
+
         /// <summary>
-        /// Номер сезона
+        ///     Номер сезона
         /// </summary>
         public int Number { get; set; }
+
         /// <summary>
-        /// Название сезона
+        ///     Название сезона
         /// </summary>
+        [BsonIgnore]
         [JsonIgnore]
         public string Name => $"Сезон №{Number}";
+
         /// <summary>
-        /// Описание сезона
+        ///     Описание сезона
         /// </summary>
         public string Description { get; set; }
+
         /// <summary>
-        /// Флаг выбора сезона
+        ///     Флаг выбора сезона
         /// </summary>
         public bool Checked { get; set; } = true;
-        /// <summary>
-        /// Эпизоды сезона
-        /// </summary>
-        [JsonIgnore]
-        public List<Episode> Episodes { get; set; }
-        /// <summary>
-        /// Получить (все/количество) (все/выбранные) эпизоды
-        /// </summary>
-        /// <param name="isChecked">True - только выбранные, false - все эпизоды</param>
-        /// <param name="nonRepeatInterval">Интервал простоя эпизода в днях (-1 - без учета интервала)</param>
-        /// <param name="count">Количество эпизодов с учетом опций (0 - все)</param>
-        /// <returns></returns>
-        public List<Episode> GetEpisodes(bool isChecked = false, int nonRepeatInterval = -1, int count = 0)
-        {
-            if (count <= 0 ||
-                count > Episodes.Count) count = Episodes.Count;
 
-            return Episodes.Where(e => !isChecked || e.Checked)
-                           .Where(e => DateTime.Now.Subtract(
-                                           e.LastDateViewed).TotalDays > nonRepeatInterval)
-                           .Take(count).ToList();
-        }
-        ///// <summary>
-        ///// Получить (общую/фактическую) длительность (всех/определенного количества)  (выбранных/всех) эпизодов 
-        ///// </summary>
-        ///// <param name="isTotal">True - общая, false - фактическая длительность</param>
-        ///// <param name="isChecked">True - выбранные, false - все эпизоды</param>
-        ///// <param name="nonRepeatInterval">Интервал простоя эпизода в днях (-1 - без учета интервала)</param>
-        ///// <param name="count">Количество эпизодов с учетом опций (0 - все)</param>
-        ///// <returns></returns>
-        //public TimeSpan GetEpisodesDuration(bool isTotal = true, bool isChecked = false, int nonRepeatInterval = -1, int count = 0)
-        //{
-        //    if (count <= 0 || count > Episodes.Count) count = Episodes.Count;
+        public Film Film { get; set; }
+        
+        [BsonIgnore] [JsonIgnore] public int FilmId => Film.Id;
 
-        //    var episodes = GetEpisodes(isChecked, nonRepeatInterval, count);
-
-        //    return TimeSpan.FromSeconds(episodes.Sum(e => isTotal
-        //                                         ? e.TotalDuration.TotalSeconds
-        //                                         : e.ActualDuration.TotalSeconds));
-        //}
+        [BsonIgnore] [JsonIgnore] public List<Episode> Episodes => DbMethods.GetEpisodeListFromDbBySeasonId(Id);
+        [BsonIgnore] [JsonIgnore] public List<AddressInfo> AddressInfoList => new List<AddressInfo>(Episodes.SelectMany(episode => episode.AddressInfoList));
+        [BsonIgnore] [JsonIgnore] public List<Jumper> Jumpers => new List<Jumper>(AddressInfoList.SelectMany(addressInfo => addressInfo.Jumpers));
     }
 }

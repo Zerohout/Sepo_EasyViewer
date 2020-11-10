@@ -1,6 +1,8 @@
 ﻿namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
 {
     using Caliburn.Micro;
+    using Helpers;
+    using Models.FilmModels;
 
     public partial class ViewingsSettingsViewModel : Screen
 	{
@@ -11,7 +13,7 @@
 
 		protected override void OnInitialize()
 		{
-			LoadData();
+            Films = new BindableCollection<Film>(DbMethods.GetDbCollection<Film>());
 			base.OnInitialize();
 		}
 	}

@@ -20,8 +20,8 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
         {
             Films = value == null
                 ? new BindableCollection<Film>()
-                : new BindableCollection<Film>(GlobalMethods.GetDbCollection<Film>()
-                                                            .FindAll(s => s.FilmType == value))
+                : new BindableCollection<Film>(DbMethods.GetDbCollection<Film>()
+                                                            .FindAll(film => film.FilmType == value).OrderBy(f => f.Name))
                 {
                     new Film { Name = NewFilmName, FilmType = SelectedFilmType ?? FilmType.Видео}
                 };
@@ -72,7 +72,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
                 ? new BindableCollection<Season>()
                 : value.Name == NewFilmName
                     ? new BindableCollection<Season>()
-                    : new BindableCollection<Season>(value.Seasons);
+                    : new BindableCollection<Season>(value.Seasons.OrderBy(s => s.Number));
             SelectedSeason = null;
 
             NotifyOfPropertyChange(() => Seasons);
@@ -124,7 +124,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
         {
             Episodes = value == null
                 ? new BindableCollection<Episode>()
-                : new BindableCollection<Episode>(value.Episodes);
+                : new BindableCollection<Episode>(value.Episodes.OrderBy(e => e.Number));
 
             SelectedEpisode = null;
 
@@ -140,7 +140,7 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
         private void SetEpisodeVM(Episode value)
         {
             EEVM = value != null
-                ? new EpisodesEditorViewModel(SelectedEpisode) { Parent = this }
+                ? new EpisodesEditorViewModel(SelectedEpisode, IsEditDefaultAddressInfo) { Parent = this }
                 : null;
 
             if (value == null)
@@ -180,6 +180,12 @@ namespace EasyViewer.Settings.FilmEditorFolder.ViewModels
 
             if (viewModel == null) return;
             ActiveItem = viewModel;
+        }
+
+        public override void TryClose(bool? dialogResult = null)
+        {
+            ActiveItem?.TryClose();
+            base.TryClose(dialogResult);
         }
 
         #endregion

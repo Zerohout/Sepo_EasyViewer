@@ -1,12 +1,16 @@
 ﻿namespace EasyViewer.ViewModels
 {
-	using System;
-	using System.Collections.Generic;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Input;
+    using LibVLCSharp.Shared;
+    using LibVLCSharp.WPF;
     using MainMenu.ViewModels;
     using Models.FilmModels;
+    using Newtonsoft.Json;
     using Views;
     using static Helpers.SystemVariables;
     using Screen = Caliburn.Micro.Screen;
@@ -15,41 +19,43 @@
     {
         public VideoPlayerViewModel()
         {
-
         }
 
-        public VideoPlayerViewModel(MainMenuViewModel mmvm, VideoPlayerMode currentMode, int? epCount,  
-            List<Episode> checkedEpisodes = null, Episode currentEpisode = null, string currentAddress = null)
+        public VideoPlayerViewModel(MainMenuViewModel mmvm, int? epCount,
+            List<Episode> checkedEpisodes)
         {
-            MMVM = mmvm;
-            MainTimer.Elapsed += MainTimer_Elapsed;
-            MainTimer.Interval = 500;
-
-            if (currentMode == VideoPlayerMode.Viewing)
-            {
-	            PreviewVisibility = Visibility.Collapsed;
-                WatchingEpisodesCount = epCount;
-                CheckedEpisodes = checkedEpisodes;
-                StartViewing();
-            }
-            else
-            {
-	            PreviewVisibility = Visibility.Visible;
-				PreviewAddress = new Uri(currentAddress ?? "");
-				_currentMode = currentMode;
-                //CurrentEpisode = currentEpisode;
-                StartPreview();
-            }
+            _libVlc = new LibVLC();
+            _mmvm = mmvm;
+            WatchingEpisodesCount = epCount;
+            CheckedEpisodes = checkedEpisodes;
         }
 
         protected override void OnInitialize()
         {
-            HotReg.RegisterGlobalHotkey(() =>
-            {
-                IsEpisodeSkipped = true;
-                PlayNextEpisode();
-            }, Keys.Right, ModifierKeys.Control);
+            HotReg.RegisterGlobalHotkey(SkipEpisode, Keys.Right, ModifierKeys.Control);
+            HotReg.RegisterGlobalHotkey(WriteNumberEpisodeToFile, Keys.Insert, ModifierKeys.Control);
+            HotReg.RegisterGlobalHotkey(WriteNumberEpisodeToFile, Keys.Oemtilde, ModifierKeys.Alt);
             base.OnInitialize();
+        }
+
+        private void SkipEpisode()
+        {
+            IsEpisodeSkipped = true;
+            PlayEpisode();
+        }
+
+        private async void WriteNumberEpisodeToFile()
+        {
+            var path = $@"{AppDataPath}\EpisodesToEditing.txt";
+            if (File.Exists(path) is false)
+            {
+               File.Create(path).Dispose();
+            }
+            var msg = $"Фильм - {CurrentEpisode.Film.Name}, Сезон - {CurrentEpisode.Season.Number},\n" +
+                      $"Эпизод - {CurrentEpisode.Number} ({CurrentEpisode.FullNumber}), Адрес - {CurrentAddressInfo.Link},\n" +
+                      $"****************************************************";
+            using var tw = File.AppendText(path);
+            await tw.WriteLineAsync(msg);
         }
 
         protected override void OnViewLoaded(object view)

@@ -10,28 +10,10 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
     using Models.FilmModels;
     using Models.SettingModels;
     using static Helpers.SystemVariables;
+    using static Helpers.DbMethods;
 
     public partial class WatchingSettingsViewModel : Screen
     {
-
-
-        /// <summary>
-        /// Развернуть/свернуть описание интеллектуального выключения
-        /// </summary>
-        public void ExpandCollapseNightHelperShutdownRemark()
-        {
-            if (IsNightHelperShutdownRemarkExpand)
-            {
-                IsNightHelperShutdownRemarkExpand = false;
-                NotifyOfPropertyChange(() => WatchingSettings);
-            }
-            else
-            {
-                IsNightHelperShutdownRemarkExpand = true;
-                NotifyOfPropertyChange(() => WatchingSettings);
-            }
-        }
-
         /// <summary>
         /// Сброс даты последнего просмотра у всех эпизодов
         /// </summary>
@@ -39,16 +21,16 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
         {
             var dvm = new DialogViewModel(
                 "Внимание, данное действие сбросит дату последнего просмотра у ВСЕХ эпизодов.\nВы хотите продолжить?",
-                DialogType.QUESTION);
+                DialogType.Question);
             WinMan.ShowDialog(dvm);
 
-            if (dvm.DialogResult == DialogResult.YES_ACTION)
+            if (dvm.DialogResult == DialogResult.YesAction)
             {
-                var films = GlobalMethods.GetDbCollection<Film>();
+                var films = GetDbCollection<Film>();
 
                 films.SelectMany(f => f.Episodes).ToList().ForEach(e => e.LastDateViewed = AppVal.ResetTime);
 
-                GlobalMethods.UpdateDbCollection(films.Where(f => f.Name != "всех"));
+                UpdateDbCollection(films.Where(f => f.Name != "всех"));
             }
         }
 
@@ -64,21 +46,21 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
             }
 
             var dvm = new DialogViewModel("Данная операция безвозвратна. Вы действительно хотите установить настройки по умолчанию?",
-                                          DialogType.QUESTION);
+                                          DialogType.Question);
             WinMan.ShowDialog(dvm);
 
-            if (dvm.DialogResult == DialogResult.NO_ACTION)
+            if (dvm.DialogResult == DialogResult.NoAction)
             {
                 return;
             }
 
             WatchingSettings = new WatchingSettings { Id = WatchingSettings.Id };
-            GlobalMethods.UpdateDbCollection(obj: WatchingSettings);
+            UpdateDbCollection(entity: WatchingSettings);
             //SaveChanges();
             LoadWS();
             NotifyButtons();
 
-            WinMan.ShowDialog(new DialogViewModel("Данные успешно сброшены по умоланию", DialogType.INFO));
+            WinMan.ShowDialog(new DialogViewModel("Данные успешно сброшены по умоланию", DialogType.Info));
         }
 
         public bool CanSetDefaultValues => GlobalMethods.IsEquals(TempWS, new WatchingSettings()) is false;
@@ -95,10 +77,10 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
             }
 
             var dvm = new DialogViewModel("Данная операция безвозвратна. Вы действительно хотите отменить изменения?",
-                                          DialogType.QUESTION);
+                                          DialogType.Question);
             WinMan.ShowDialog(dvm);
 
-            if (dvm.DialogResult == DialogResult.NO_ACTION)
+            if (dvm.DialogResult == DialogResult.NoAction)
             {
                 return;
             }
@@ -122,11 +104,11 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
                 return;
             }
 
-            GlobalMethods.UpdateDbCollection(obj: WatchingSettings);
+            UpdateDbCollection(entity: WatchingSettings);
             LoadWS();
             NotifyButtons();
 
-            WinMan.ShowDialog(new DialogViewModel("Изменения успешно сохранены", DialogType.INFO));
+            WinMan.ShowDialog(new DialogViewModel("Изменения успешно сохранены", DialogType.Info));
         }
 
         public bool CanSaveChanges => HasChanges;
@@ -148,32 +130,32 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
             if (filmName == "всех")
             {
                 dvm = new DialogViewModel($"Вы уверены что хотите сбросить даты последнего просмотра " +
-                                          $"ВСЕХ эпизодов? Эта операция необратима.", DialogType.QUESTION);
+                                          $"ВСЕХ эпизодов? Эта операция необратима.", DialogType.Question);
             }
             else
             {
                 dvm = new DialogViewModel($"Вы уверены что хотите сбросить даты последнего просмотра " +
                                           $"всех эпизодов \"{filmName}\"? " +
-                                          "Эта операция необратима.", DialogType.QUESTION);
+                                          "Эта операция необратима.", DialogType.Question);
             }
 
             WinMan.ShowDialog(dvm);
 
-            if (dvm.DialogResult == DialogResult.YES_ACTION)
+            if (dvm.DialogResult == DialogResult.YesAction)
             {
                 var resetEpisodes = new List<Episode>();
                 if (filmName == "всех")
                 {
-                    Films.ToList().ForEach(s => resetEpisodes.AddRange(s.GetEpisodes()));
+                    Films.ToList().ForEach(s => resetEpisodes.AddRange(s.Episodes));
                 }
                 else
                 {
-                    resetEpisodes.AddRange(Films.First(f => f.Name == filmName).GetEpisodes());
+                    resetEpisodes.AddRange(Films.First(f => f.Name == filmName).Episodes);
                 }
 
                 if (resetEpisodes.All(re => re.LastDateViewed == AppVal.ResetTime))
                 {
-                    WinMan.ShowDialog(new DialogViewModel("Дата уже сброшена.", DialogType.INFO));
+                    WinMan.ShowDialog(new DialogViewModel("Дата уже сброшена.", DialogType.Info));
                     return;
                 }
 
@@ -182,8 +164,8 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
                     ep.LastDateViewed = AppVal.ResetTime;
                 }
 
-                GlobalMethods.UpdateDbCollection(objCollection: Films.Where(f => f.Name != "всех"));
-                WinMan.ShowDialog(new DialogViewModel("Дата успешно сброшена.", DialogType.INFO));
+                UpdateDbCollection(objCollection: resetEpisodes);
+                WinMan.ShowDialog(new DialogViewModel("Дата успешно сброшена.", DialogType.Info));
             }
             NotifyOfPropertyChange(() => CanResetLastDateViewed);
         }
@@ -238,5 +220,24 @@ namespace EasyViewer.Settings.WatchingSettingsFolder.ViewModels
         }
 
         public bool CanExportSettingsFromFile => true;
+
+        public void SelectionChanged()
+        {
+            switch (SelectedNoneRepeatTimeType)
+            {
+                case "никогда":
+                    WatchingSettings.NonRepeatDaysInterval = 366;
+                    break;
+                case "всегда":
+                    WatchingSettings.NonRepeatDaysInterval = null;
+                    break;
+            }
+            NotifyButtons();
+        }
+
+        public void NonRepeatIntervalChanged()
+        {
+            NotifyButtons();
+        }
     }
 }

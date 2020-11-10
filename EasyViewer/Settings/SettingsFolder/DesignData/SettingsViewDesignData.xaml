@@ -9,7 +9,6 @@
     <vm:SettingsViewModel.Settings>
         <wsvm:WatchingSettingsViewModel DisplayName="Основные настройки"/>
         <fevm:EditorSelectorViewModel DisplayName="Редактор фильмов"/>
-        <fevm:VoiceOversEditingViewModel DisplayName="Редактор озвучек"/>
         <vsvm:ViewingsSettingsViewModel DisplayName="Настройки просмотра"/>
     </vm:SettingsViewModel.Settings>
 

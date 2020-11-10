@@ -8,6 +8,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="clr-namespace:EasyViewer.Helpers"
     cal:Bind.AtDesignTime="True"
     cal:Message.Attach="[Event PreviewKeyDown]=[Action KeyDown($eventArgs)]"
     d:DataContext="{d:DesignData Source=../DesignData/SeasonsEditingViewDesignData.xaml}"
@@ -48,10 +49,21 @@
             <ListBox
                 Grid.Row="1"
                 Grid.Column="0"
+                SelectionMode="Extended"
                 Margin="5"
-                cal:Message.Attach="[Event SelectionChanged]=[Action SelectionChanged($source)]; [Event MouseDoubleClick]=[Action EditEpisode()]"
                 ItemsSource="{Binding Episodes, UpdateSourceTrigger=PropertyChanged}"
                 SelectedItem="{Binding SelectedEpisode, UpdateSourceTrigger=PropertyChanged}">
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.MouseDoubleClick">
+                        <cal:ActionMessage MethodName="EditEpisode">
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.SelectionChanged">
+                        <cal:ActionMessage MethodName="SelectionChanged">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
                 <ListBox.ItemTemplate>
                     <ItemContainerTemplate>
                         <TextBlock Style="{StaticResource CCComboBoxTBlockItemStyle}">
@@ -65,6 +77,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <StackPanel
+                Focusable="False"
                 Grid.Row="1"
                 Grid.Column="1"
                 VerticalAlignment="Center"
@@ -95,16 +108,21 @@
                     Margin="0,2.5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action EditEpisode()]"
                     ToolTip="Редактировать выбранный сезон">
+                    <i:Interaction.Triggers>
+                        <helpers:RoutedEventTrigger RoutedEvent="Button.Click">
+                            <cal:ActionMessage MethodName="EditEpisode">
+                            </cal:ActionMessage>
+                        </helpers:RoutedEventTrigger>
+                    </i:Interaction.Triggers>
                     <iconPacks:PackIconMaterial Style="{StaticResource EditListEditBtnIconStyle}" />
                 </Button>
                 <Button
                     Margin="0,2.5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action RemoveEpisode()]"
-                    ToolTip="Удалить последний эпизод"
+                    cal:Message.Attach="[Event Click]=[Action DeleteSelectedEpisodes()]"
+                    ToolTip="Удалить выбранный эпизод"
                     ToolTipService.ShowOnDisabled="true">
                     <iconPacks:PackIconMaterial Style="{StaticResource EditListRemoveBtnIconStyle}" />
                 </Button>
@@ -234,7 +252,6 @@
         </Grid>
 
         <!--#endregion-->
-
 
 
     </Grid>

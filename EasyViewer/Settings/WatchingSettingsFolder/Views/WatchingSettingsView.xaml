@@ -237,107 +237,6 @@
                         Style="{StaticResource SEDefaultTBlockStyle}"
                         Text="после окончания просмотра всех эпизодов." />
                 </StackPanel>
-
-                <!--#region Примечание интеллектуального выключения-->
-                <!--  Сворачивание/разворачивание примечаний  -->
-                <Button
-                    Grid.Row="1"
-                    HorizontalAlignment="Left"
-                    cal:Message.Attach="[Event Click]=[Action ExpandCollapseNightHelperShutdownRemark()]">
-                    <Button.Style>
-                        <Style
-                            BasedOn="{StaticResource MetroButton}"
-                            TargetType="Button">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding IsNightHelperShutdownRemarkExpand}"
-                                    Value="True">
-                                    <Setter Property="ToolTip" Value="Свернуть примечания" />
-                                    <Setter Property="Content">
-                                        <Setter.Value>
-                                            <iconPacks:PackIconEntypo
-                                                Width="25"
-                                                Height="15"
-                                                Foreground="OrangeRed"
-                                                Kind="ChevronUp" />
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding IsNightHelperShutdownRemarkExpand}"
-                                    Value="False">
-                                    <Setter Property="ToolTip" Value="Развернуть примечания" />
-                                    <Setter Property="Content">
-                                        <Setter.Value>
-                                            <iconPacks:PackIconEntypo
-                                                Width="25"
-                                                Height="15"
-                                                Foreground="OrangeRed"
-                                                Kind="ChevronDown" />
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <!--  Примечания  -->
-                <StackPanel
-                    Grid.Row="2"
-                    Orientation="Vertical"
-                    Visibility="{Binding NightHelperShutdownRemarkVisibility}">
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="16"
-                        Foreground="YellowGreen"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="1 примечание: 2 часа ночи меньше 23 часов вечера, 23:59 больше чем 0:01."
-                        TextWrapping="Wrap" />
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="16"
-                        Foreground="YellowGreen"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="    1-й Пример: время с 22 по 6 - компьютер выключится между 22 часами вечера и 6 часами утра."
-                        TextWrapping="Wrap" />
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="16"
-                        Foreground="YellowGreen"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="    2-й Пример Время с 1 по 2 - если просмотр закончится между этим временем, компьютер выключится. Если просмотр закончится в 3 часа ночи, то компьютер не выключится."
-                        TextWrapping="Wrap" />
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="16"
-                        Foreground="YellowGreen"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="2 примечание: компьютер не выключится сразу при достижении указанных границ, а лишь включит функцию выключения, то есть компьютер выключится только если будут просмотрены все указанные эпизоды."
-                        TextWrapping="Wrap" />
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="16"
-                        Foreground="YellowGreen"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="3 примечание: Интелектуальное выключение не мешает работе функции выключения компьютера, а лишь дополняет её. Ничего ужасного не случится, если вы активируете выключение вручную."
-                        TextWrapping="Wrap" />
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="16"
-                        Foreground="YellowGreen"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="4 примечание: Добавление/удаление эпизодов из очереди не мешает работе интеллектуального выключения"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-
-                <!--#endregion-->
-
             </Grid>
 
             <!--#endregion-->
@@ -543,11 +442,6 @@
                 <!--#endregion-->
 
 
-
-
-
-
-
             </Grid>
 
             <!--#endregion-->
@@ -555,7 +449,7 @@
             <StackPanel
                 Grid.Row="4"
                 Orientation="Vertical"
-                Visibility="{Binding WatchingSettings.WatchingInRowVisibility}">
+                Visibility="{Binding WatchingInRowVisibility}">
                 <TextBlock
                     FontSize="18"
                     Foreground="Chocolate"
@@ -571,7 +465,7 @@
             <Grid
                 Grid.Row="4"
                 Margin="10,5"
-                Visibility="{Binding WatchingSettings.RandomEnabledVisibility}">
+                Visibility="{Binding RandomEnabledVisibility}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
@@ -591,37 +485,17 @@
                             TargetType="TextBlock">
                             <Style.Triggers>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="никогда">
                                     <Setter Property="Text" Value="Я " />
                                 </DataTrigger>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="лет">
-                                    <Setter Property="Text" Value="Минимальное количество " />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="месяцев">
-                                    <Setter Property="Text" Value="Минимальное количество " />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="недель">
-                                    <Setter Property="Text" Value="Минимальное количество " />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="дней">
                                     <Setter Property="Text" Value="Минимальное количество " />
                                 </DataTrigger>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="часов">
-                                    <Setter Property="Text" Value="Минимальное количество " />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="всегда">
                                     <Setter Property="Text" Value="Я " />
                                 </DataTrigger>
@@ -639,8 +513,8 @@
                     FontSize="16"
                     FontWeight="Bold"
                     Foreground="Aqua"
-                    ItemsSource="{Binding WatchingSettings.NoneRepeatTimeTypeList}"
-                    SelectedItem="{Binding WatchingSettings.SelectedNoneRepeatTimeType}" />
+                    ItemsSource="{Binding NoneRepeatTimeTypeList}"
+                    SelectedItem="{Binding SelectedNoneRepeatTimeType}" />
                 <TextBlock
                     Grid.Column="2"
                     FontSize="18"
@@ -651,37 +525,17 @@
                             TargetType="TextBlock">
                             <Style.Triggers>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="никогда">
                                     <Setter Property="Text" Value=" не хочу видеть повторяющиеся эпизоды." />
                                 </DataTrigger>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="лет">
-                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="месяцев">
-                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="недель">
-                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="дней">
                                     <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
                                 </DataTrigger>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="часов">
-                                    <Setter Property="Text" Value=", прежде чем эпизод повторится -" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="всегда">
                                     <Setter Property="Text" Value=" хочу видеть повторяющиеся эпизоды." />
                                 </DataTrigger>
@@ -695,49 +549,29 @@
                     Margin="10,0"
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
-                    cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action TextChanged()]"
+                    cal:Message.Attach="[Event KeyDown]=[Action NumericValidation($eventArgs)]; [Event TextChanged]=[Action NonRepeatIntervalChanged()]"
                     FontFamily="Comic Sans MS"
                     FontSize="16"
                     FontWeight="Bold"
                     Foreground="Aqua"
-                    Text="{Binding WatchingSettings.NoneRepeatTimeCount, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                    Text="{Binding WatchingSettings.NonRepeatDaysInterval, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
                     <TextBox.Style>
                         <Style
                             BasedOn="{StaticResource MetroTextBox}"
                             TargetType="TextBox">
                             <Style.Triggers>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="никогда">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="лет">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="месяцев">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="недель">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="дней">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                                 <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
-                                    Value="часов">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding WatchingSettings.SelectedNoneRepeatTimeType}"
+                                    Binding="{Binding SelectedNoneRepeatTimeType}"
                                     Value="всегда">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
@@ -774,29 +608,6 @@
                     Foreground="DarkCyan"
                     Style="{StaticResource SEDefaultTBlockStyle}"
                     Text="дату последнего просмотра у" />
-                <TextBlock
-                    Grid.Column="2"
-                    FontSize="18"
-                    Foreground="DarkCyan">
-                    <TextBlock.Style>
-                        <Style
-                            BasedOn="{StaticResource SEDefaultTBlockStyle}"
-                            TargetType="TextBlock">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding IsSelectedAllFilmsToReset}"
-                                    Value="True">
-                                    <Setter Property="Text" Value=" " />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding IsSelectedAllFilmsToReset}"
-                                    Value="False">
-                                    <Setter Property="Text" Value=" фильма " />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
                 <ComboBox
                     Grid.Column="3"
                     MinWidth="200"

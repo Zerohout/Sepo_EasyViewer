@@ -1,66 +1,77 @@
 ﻿// ReSharper disable once CheckNamespace
+
 namespace EasyViewer.MainMenu.ViewModels
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows;
     using Caliburn.Micro;
     using EasyViewer.ViewModels;
-    using LiteDB;
     using Models.FilmModels;
     using static Helpers.GlobalMethods;
     using static Helpers.SystemVariables;
+    using static Helpers.DbMethods;
 
     public partial class MainMenuViewModel : Screen
     {
+        private void CollapseMainWindow()
+        {
+            var mainView = (MainViewModel) Parent;
+            if (mainView.WindowState == WindowState.Normal)
+            {
+                mainView.WindowState = WindowState.Minimized;
+            }
+            else
+            {
+                mainView.WindowState = WindowState.Normal;
+            }
+        }
+
         /// <summary>
         /// Загрузка списка фильмов из базы данных
         /// </summary>
-        public void LoadFilms()
+        private void LoadFilms()
         {
-            using (var db = new LiteDatabase(DBPath))
-            {
-                var films = db.GetCollection<Film>();
-
-                Films = new BindableCollection<Film>(films.FindAll());
-            }
+            Films = new BindableCollection<Film>(GetDbCollection<Film>());
         }
 
         /// <summary>
         /// Установить значения эпизодов
         /// </summary>
-        public void SetEpisodesValues()
+        private void SetEpisodesValues()
         {
-            if (_checkedEpisodes.Count <= 0)
+            if (CheckedEpisodes.Count <= 0)
             {
                 AvailableEpisodesCount = 0;
                 WatchingEpisodesCount = 0;
             }
             else
             {
-                if (AvailableEpisodesCount == 0)
-                {
-                    WatchingEpisodesCount = AppVal.WS.DefaultEpCount ?? 0;
-                }
-
                 AvailableEpisodesCount = CheckedEpisodes.Count;
+                WatchingEpisodesCount = AppVal.WS.DefaultEpCount;
             }
         }
 
         /// <summary>
-        /// Отфильтровать серии от просмотренных и не выбранных
+        /// Загрузка данных
         /// </summary>
-        public void SetCheckedEpisodes()
+        private Task LoadData()
         {
-            CheckedEpisodes =
-                new List<Episode>(Films
-                                  .Where(s => s.Checked)
-                                  .SelectMany(s => s
-                                                  .GetEpisodes(true, AppVal.WS.NonRepeatDaysInterval ?? -1)));
+            return Task.Run(() =>
+            {
+                AppVal.WS = LoadOrCreateWatchingSettings();
+                Films = new BindableCollection<Film>(GetDbCollection<Film>());
+                _checkedFilmsCount = _films.Count(f => f.Checked);
+                CheckedEpisodes = new List<Episode>(Films
+                    .Where(f => f.Checked)
+                    .SelectMany(f => f.CheckedEpisodes));
+                CreateList();
+            });
         }
-               
+
         #region Просмотр серий
 
         /// <summary>
@@ -68,270 +79,206 @@ namespace EasyViewer.MainMenu.ViewModels
         /// </summary>
         public void CloseVideoPlayer()
         {
-            VideoPlayer.SaveChanges();
-            MainTimer.Stop();
-            VideoPlayer.Topmost = false;
-            Vlc.Dispose();
             VideoPlayer.TryClose();
             VideoPlayer = null;
             NotifyOfPropertyChange(() => CanStart);
             NotifyOfPropertyChange(() => EpisodesCountRemainingString);
             if (Tray.Visible)
             {
-                ActivateDeactivateTray((Window)((MainViewModel)Parent).GetView());
+                ActivateDeactivateTray((Window) ((MainViewModel) Parent).GetView());
             }
-            if (IsViewingEnded)
+
+            if (AppVal.WS.NightHelperShutdown)
             {
-                if (IsShutdownComp)
+                if (AppVal.WS.NightHelperStartTime <= DateTime.Now.Hour ||
+                    AppVal.WS.NightHelperEndTime >= DateTime.Now.Hour)
                 {
-                    var psi = new ProcessStartInfo("shutdown", "/s /t 5")
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    };
-
-                    Process.Start(psi);
-
-                    Exit();
+                    if (IsShutdownComp is false) IsShutdownComp = true;
                 }
             }
-        }
 
-
-        public TimeSpan IntellectualShutdownTimer { get; set; }
-
-        /// <summary>
-        /// Метод начала просмотра серий
-        /// </summary>
-        private void StartWatch()
-        {
-            IntellectualShutdownTimer = new TimeSpan();
-
-            //if (GeneralSettings.WatchingInRow is true)
-            //{
-
-            //    var number = GeneralSettings.LastWatchedEpisodeInRowFullNumber;
-            //    var tempEpisode = CheckedEpisodes.First(ce => ce.FullNumber == number);
-            //    CurrentEpisodeIndex = CheckedEpisodes.IndexOf(tempEpisode) + 1;
-
-            //}
-            //else
-            //{
-            //    CheckedEpisodes = ShuffleEpisode(CheckedEpisodes, GeneralSettings.RandomMixCount ?? 1);
-            //    CurrentEpisodeIndex = 0;
-            //}
-
-            //while (GeneralSettings.EpisodesCount > 0 && GeneralSettings.AvailableEpisodesCount > 0)
-            //{
-
-            //    GeneralSettings.EpisodesCount--;
-            //    NotifyOfPropertyChange(() => GeneralSettings);
-
-            //    //цикл для переключения серии без потерь в количестве указанных просмотров
-            //    do
-            //    {
-            //        IsSwitchEpisode = false;
-            //        GeneralSettings.AvailableEpisodesCount--;
-            //        TotalEpisodeTime = new TimeSpan();
-            //        PlayEpisode(CheckedEpisodes[CurrentEpisodeIndex++]);
-
-            //    } while (IsSwitchEpisode && GeneralSettings.AvailableEpisodesCount > 0);
-            //}
-
-            if (IsShutdownComp)
+            if (IsViewingEnded && IsShutdownComp)
             {
-                var psi = new ProcessStartInfo("shutdown", "/s /t 5")
+                var psi = new ProcessStartInfo("shutdown", "/s /t 10")
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false
                 };
 
                 Process.Start(psi);
+                Exit();
             }
-
-            Exit();
         }
 
+        private Task IncreaseWatchingEpisodes()
+        {
+            return Task.Run(() =>
+            {
+                if (WatchingEpisodesCount < AvailableEpisodesCount) WatchingEpisodesCount++;
+            });
+        }
 
-
-        //private void PlayEpisode(Episode episode)
-        //{
-
-        //    CurrentDuration = option.Duration;
-        //    option.LastDateViewed = DateTime.Now;
-        //    Jumpers = new List<Jumper>(option.Jumpers);
-        //    CurrentJumper = Jumpers[jumperCount++];
-
-        //    StartVideoPlayer();
-
-        //    Helper.Timer.Restart();
-        //    LaunchMonitoring();
-        //    if (GeneralSettings.WatchingInRow)
-        //    {
-        //        GeneralSettings.LastWatchedEpisodeInRowFullNumber = episode.FullNumber;
-        //    }
-        //}
-
-
-
-        ///// <summary>
-        ///// Запуск серии в видео проигрывателе
-        ///// </summary>
-        //private void StartVideoPlayer()
-        //{
-
-        //    if (CurrentJumper.StartTime > new TimeSpan())
-        //    {
-        //        //IsDelayedSkip = true;
-        //        return;
-        //    }
-
-        //    CurrentJumper = jumperCount < Jumpers.Count
-        //        ? Jumpers[jumperCount++]
-        //        : null;
-        //}
+        private Task DecreaseWatchingEpisodes()
+        {
+            return Task.Run(() =>
+            {
+                if (WatchingEpisodesCount > 0) WatchingEpisodesCount--;
+            });
+        }
 
         #endregion
 
-        #region Мониторинг
-
-        ///// <summary>
-        ///// Запуск таймера мониторинга
-        ///// </summary>
-        //private void LaunchMonitoring()
-        //{
-        //    var autoEvent = new AutoResetEvent(false);
-
-        //    var stateTimer = new Timer(MonitoringAction, autoEvent,
-        //                               new TimeSpan(0, 0, 0),
-        //                               new TimeSpan(0, 0, 1));
-        //    autoEvent.WaitOne();
-        //    autoEvent.Dispose();
-        //    stateTimer.Dispose();
-        //}
-
-        ///// <summary>
-        ///// Действия мониторинга
-        ///// </summary>
-        ///// <param name="stateInfo"></param>
-        //private void MonitoringAction(object stateInfo)
-        //{
-        //    var autoEvent = (AutoResetEvent)stateInfo;
-
-        //    NotifyOfPropertyChange(() => GeneralSettings);
-        //    NotifyOfPropertyChange(() => EndDate);
-        //    NotifyOfPropertyChange(() => EndTime);
-
-        //    PauseMonitoring();
-
-        //    if (Helper.Timer.IsRunning)
-        //    {
-        //        if (CurrentJumper != null)
-        //        {
-        //            if (TotalEpisodeTime >= CurrentJumper.StartTime &&
-        //                TotalEpisodeTime < CurrentJumper.EndTime)
-        //            {
-        //                DelayedSkipMonitoring();
-        //            }
-        //        }
-
-        //        // Активация выключения компьютера, при включенном ночном помощнике
-        //        if (GeneralSettings.NightHelperShutdown is true && IsShutdownComp is false)
-        //        {
-        //            if (IntellectualShutdownTimer >= GeneralSettings.NightHelperShutdownTimeSpan &&
-        //                GeneralSettings.NightHelperShutdownReachedTime > DateTime.Now.TimeOfDay)
-        //            {
-        //                IsShutdownComp = true;
-        //            }
-
-        //            IntellectualShutdownTimer += new TimeSpan(0, 0, 1);
-        //        }
-
-        //        TotalEpisodeTime += new TimeSpan(0, 0, 1);
-        //    }
-
-        //    //Таймер превысил длительность серии
-        //    if (ElapsedTime > CurrentDuration || IsSwitchEpisode)
-        //    {
-        //        if (IsPaused is true)
-        //        {
-        //            IsPaused = false;
-        //            IsNowPause = false;
-        //        }
-
-        //        jumperCount = 0;
-        //        Helper.Timer.Reset();
-        //        Helper.Msg.PressKey(VK_ESCAPE);
-        //        autoEvent.Set();
-        //    }
-
-        //    TotalEpisodeTime += new TimeSpan(0, 0, 1);
-        //}
-
-        ///// <summary>
-        ///// Действия после отложенного запуска
-        ///// </summary>
-        //private void DelayedSkipMonitoring()
-        //{
-        //    TotalEpisodeTime += new TimeSpan(0, 0, CurrentJumper.SkipCount * 5);
-        //    Helper.Timer.Stop();
-
-        //    CurrentJumper = jumperCount < Jumpers.Count
-        //        ? Jumpers[jumperCount++]
-        //        : null;
-
-        //    Helper.Timer.Start();
-        //}
-
-
-        ///// <summary>
-        ///// Мониторинг состояния паузы
-        ///// </summary>
-        //private void PauseMonitoring()
-        //{
-        //    //Серия поставлена на паузу
-        //    if (IsPaused && Helper.Timer.IsRunning)
-        //    {
-        //        IsNowPause = true;
-        //        Helper.Timer.Stop();
-        //        ((MainViewModel)Parent).WindowState = WindowState.Normal;
-        //        return;
-        //    }
-
-        //    //Серия снята с паузы
-        //    if (!IsPaused && !Helper.Timer.IsRunning && IsNowPause)
-        //    {
-        //        Helper.Timer.Start();
-        //        ((MainViewModel)Parent).WindowState = WindowState.Minimized;
-        //        IsNowPause = false;
-        //    }
-        //}
-
-        #endregion
-
-        #region Дополнительные методы
+        #region Обработка выбранных эпизодов
 
         /// <summary>
-        /// Перемешать эпизоды в списке
+        /// Создает список (по порядку, перемешанный (с цепочкой эпизодов)).
         /// </summary>
-        /// <param name="list">Список эпизодов</param>
-        /// <param name="count">Количество перемешиваний</param>
-        /// <returns></returns>
-        private List<Episode> ShuffleEpisodes(List<Episode> list, int count)
+        private void CreateList()
         {
-            for (var i = 0; i < count; i++)
+            if (AppVal.WS.RandomWatching)
             {
-                for (var j = list.Count - 1; j >= 1; j--)
+                _checkedEpisodes = ShuffleEpisodes(_checkedEpisodes.ToList(), AppVal.WS.RandomMixCount ?? 1);
+
+                if (AppVal.WS.IsEpisodeChainActive)
                 {
-                    var k = rnd.Next(j + 1);
-                    // обменять значения data[j] и data[i]
-                    var temp = list[k];
-                    list[k] = list[j];
-                    list[j] = temp;
+                    _checkedEpisodes = CreateEpisodeChains(CheckedEpisodes.ToList());
+                }
+            }
+            else
+            {
+                _checkedEpisodes = CheckedEpisodes.OrderBy(ce => ce.FullNumber).ToList();
+            }
+
+            NotifyOfPropertyChange(() => CheckedEpisodes);
+        }
+
+        /// <summary>
+        /// Создание цепочки эпизодов
+        /// </summary>
+        /// <param name="episodes"></param>
+        /// <returns></returns>
+        private List<Episode> CreateEpisodeChains(List<Episode> episodes)
+        {
+            var count = episodes.Count;
+
+            while (CheckChain(episodes))
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    var num = i;
+                    var prevChainLink = episodes[num].PrevChainLink;
+
+                    if (prevChainLink <= 0) continue;
+
+                    var chain = FindChain(episodes, prevChainLink);
+
+                    if (chain == null) continue;
+
+                    if (num + chain.Count >= count)
+                    {
+                        num = count - chain.Count;
+                    }
+
+                    foreach (var index in chain.Select(link => episodes.IndexOf(link)))
+                    {
+                        var temp = episodes[num];
+                        episodes[num] = episodes[index];
+                        episodes[index] = temp;
+                        num++;
+                    }
+
+                    i = num - 1;
                 }
             }
 
-            return list;
+            return episodes;
+        }
+
+        /// <summary>
+        /// Нахождение и составление звеньев
+        /// </summary>
+        /// <param name="episodes">Список эпизодов</param>
+        /// <param name="prevNum">Номер предыдущего эпизода в цепочке</param>
+        /// <returns></returns>
+        private List<Episode> FindChain(List<Episode> episodes, int prevNum)
+        {
+            var prevEpisode = episodes.FirstOrDefault(e => e.FullNumber == prevNum);
+
+            if (prevEpisode == null) return null;
+
+            var elem = episodes[episodes.IndexOf(prevEpisode)];
+
+            if (elem.PrevChainLink > 0)
+            {
+                FindChain(episodes, elem.PrevChainLink);
+            }
+
+            var result = new List<Episode>();
+            while (true)
+            {
+                result.Add(elem);
+                elem = episodes.FirstOrDefault(e => e.FullNumber == elem.NextChainLink);
+
+                if (elem == null) break;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Проверка сборки цепочки эпизодов
+        /// </summary>
+        /// <param name="episodes">Список эпизодов</param>
+        /// <returns></returns>
+        private bool CheckChain(List<Episode> episodes)
+        {
+            var count = episodes.Count;
+
+            for (var i = 0; i < count; i++)
+            {
+                var num = i;
+                var prev = episodes[num].PrevChainLink;
+                var next = episodes[num].NextChainLink;
+
+                if (prev == 0 && next == 0) continue;
+
+                if (prev > 0)
+                {
+                    if (episodes.FirstOrDefault(e => e.FullNumber == prev) == null) continue;
+                    if (num == 0 || prev != episodes[num - 1].FullNumber) return true;
+                }
+
+                if (next > 0)
+                {
+                    if (episodes.FirstOrDefault(e => e.FullNumber == next) == null) continue;
+                    if (num == count - 1 || next != episodes[num + 1].FullNumber) return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Перемешать список эпизодов
+        /// </summary>
+        /// <param name="episodes">Список эпизодов</param>
+        /// <param name="count">Количество перемешиваний</param>
+        /// <returns></returns>
+        private List<Episode> ShuffleEpisodes(List<Episode> episodes, int count)
+        {
+            var rnd = new Random();
+            for (var i = 0; i < count; i++)
+            {
+                for (var j = episodes.Count - 1; j >= 1; j--)
+                {
+                    var k = rnd.Next(j + 1);
+                    var temp = episodes[k];
+                    episodes[k] = episodes[j];
+                    episodes[j] = temp;
+                }
+            }
+
+            return episodes;
         }
 
         #endregion

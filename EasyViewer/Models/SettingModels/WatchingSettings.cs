@@ -1,8 +1,10 @@
 ﻿namespace EasyViewer.Models.SettingModels
 {
     using System;
+    using System.Collections.Generic;
     using System.Windows;
     using Caliburn.Micro;
+    using LiteDB;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -224,6 +226,9 @@
                 NotifyOfPropertyChange(() => RandomWatching);
             }
         }
+
+       
+        
 
         #endregion
         

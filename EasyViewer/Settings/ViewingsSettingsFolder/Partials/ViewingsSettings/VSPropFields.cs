@@ -1,4 +1,5 @@
 ﻿// ReSharper disable CheckNamespace
+
 namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
 {
     using System.Windows;
@@ -7,23 +8,17 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
     using Models.FilmModels;
 
 
-    public partial class ViewingsSettingsViewModel : Screen, ISettingsViewModel
+    public partial class ViewingsSettingsViewModel : Screen
     {
         private BindableCollection<Film> _films = new BindableCollection<Film>();
         private BindableCollection<Season> _seasons = new BindableCollection<Season>();
         private BindableCollection<Episode> _episodes = new BindableCollection<Episode>();
-
-
-        private bool _isFilmListEnable;
-        private bool _isSeasonListEnable;
-        private bool _isEpisodeListEnable;
+        private BindableCollection<AddressInfo> _addressInfoList = new BindableCollection<AddressInfo>();
 
         private Film _selectedFilm;
         private Season _selectedSeason;
         private Episode _selectedEpisode;
-
-        private (int FilmId, int SeasonId, int EpisodeId, int VoiceOverId) IdList = (0, 0, 0, 0);
-
+        private AddressInfo _selectedAddressInfo;
 
         #region Flags
 
@@ -69,8 +64,17 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
             set
             {
                 _episodes = value;
-                EpisodeIndexes.EndIndex = value?.Count - 1 ?? -1;
                 NotifyOfPropertyChange(() => Episodes);
+            }
+        }
+
+        public BindableCollection<AddressInfo> AddressInfoList
+        {
+            get => _addressInfoList;
+            set
+            {
+                _addressInfoList = value;
+                NotifyOfPropertyChange(()=> AddressInfoList);
             }
         }
 
@@ -80,7 +84,16 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
         public Film SelectedFilm
         {
             get => _selectedFilm;
-            set => ChangeSelectedFilm(value);
+            set
+            {
+                _selectedFilm = value;
+                if(AddressInfoList.Count > 0) AddressInfoList = new BindableCollection<AddressInfo>();
+                if (Episodes.Count > 0) Episodes = new BindableCollection<Episode>();
+                Seasons = value != null
+                    ? new BindableCollection<Season>(value.Seasons)
+                    : new BindableCollection<Season>();
+                NotifyFilmData();
+            }
         }
 
         /// <summary>
@@ -89,7 +102,15 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
         public Season SelectedSeason
         {
             get => _selectedSeason;
-            set => ChangeSelectedSeason(value);
+            set
+            {
+                _selectedSeason = value;
+                if(AddressInfoList.Count > 0) AddressInfoList = new BindableCollection<AddressInfo>();
+                Episodes = value == null
+                    ? new BindableCollection<Episode>()
+                    : new BindableCollection<Episode>(value.Episodes);
+                NotifySeasonData();
+            }
         }
 
         /// <summary>
@@ -98,40 +119,24 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
         public Episode SelectedEpisode
         {
             get => _selectedEpisode;
-            set => ChangeSelectedEpisode(value);
-        }
-
-        #endregion
-
-        #region Lists data
-
-        public bool IsFilmListEnable
-        {
-            get => _isFilmListEnable;
             set
             {
-                _isFilmListEnable = value;
-                NotifyOfPropertyChange(() => IsFilmListEnable);
+                _selectedEpisode = value;
+                AddressInfoList = value == null
+                    ? new BindableCollection<AddressInfo>()
+                    : new BindableCollection<AddressInfo>(value.AddressInfoList); 
+                NotifyEpisodeData();
             }
         }
 
-        public bool IsSeasonListEnable
+        public AddressInfo SelectedAddressInfo
         {
-            get => _isSeasonListEnable;
+            get => _selectedAddressInfo;
             set
             {
-                _isSeasonListEnable = value;
-                NotifyOfPropertyChange(() => IsSeasonListEnable);
-            }
-        }
-
-        public bool IsEpisodeListEnable
-        {
-            get => _isEpisodeListEnable;
-            set
-            {
-                _isEpisodeListEnable = value;
-                NotifyOfPropertyChange(() => IsEpisodeListEnable);
+                _selectedAddressInfo = value;
+                NotifyOfPropertyChange(()=> SelectedAddressInfo);
+                NotifyOfPropertyChange(() => CanCancelVoiceOverSelection);
             }
         }
 
@@ -154,19 +159,6 @@ namespace EasyViewer.Settings.ViewingsSettingsFolder.ViewModels
                 ? Visibility.Hidden
                 : Visibility.Visible;
 
-
-
         #endregion
-
-
-        public bool HasChanges { get; }
-
-        public void SaveChanges()
-        {
-
-        }
-
-        public bool CanSaveChanges => true;
-
     }
 }

@@ -9,6 +9,8 @@
     xmlns:local="clr-namespace:EasyViewer.Settings.FilmEditorFolder.Views"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpf="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     cal:Bind.AtDesignTime="True"
     d:DataContext="{d:DesignData Source=../DesignData/AddressEditingViewDesignData.xaml}"
     d:DesignHeight="450"
@@ -19,22 +21,21 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2.6*" />
+            <ColumnDefinition Width="3.70*" />
+            <ColumnDefinition Width="3.70*" />
         </Grid.ColumnDefinitions>
 
-        <!--#region Озвучка, название, адрес-->
+        <!--#region Настройки адреса-->
         <Grid
             Grid.Row="0"
             Grid.Column="0"
-            Grid.ColumnSpan="3"
-            IsEnabled="{Binding IsInterfaceUnlocked}">
+            Grid.ColumnSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -47,7 +48,8 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <!--  Озвучка  -->
+
+            <!--#region  Озвучка  -->
             <TextBlock
                 Grid.Row="0"
                 Grid.Column="0"
@@ -62,12 +64,27 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 Margin="2.5"
-                cal:Message.Attach="[Event TextChanged]=[Action TextChanged()]; [Event PreviewMouseDoubleClick]=[TBoxDoubleClick($source)]"
                 Style="{StaticResource SETBoxDefaultStyle}"
                 TabIndex="1"
-                Text="{Binding CurrentAddress.VoiceOver, UpdateSourceTrigger=PropertyChanged}"
-                TextWrapping="Wrap" />
-            <!--  Название  -->
+                Text="{Binding CurrentAddressInfo.VoiceOver, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap">
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                        <cal:ActionMessage MethodName="TextChanged">
+                            <cal:Parameter Value="$source" />
+                            <cal:Parameter Value="$eventArgs" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="TextBox.PreviewMouseDoubleClick">
+                        <cal:ActionMessage MethodName="TBoxDoubleClick">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <!--#endregion-->
+
+            <!--#region  Название  -->
             <TextBlock
                 Grid.Row="0"
                 Grid.Column="2"
@@ -83,12 +100,27 @@
                 Grid.Column="3"
                 Grid.ColumnSpan="2"
                 Margin="2.5"
-                cal:Message.Attach="[Event TextChanged]=[Action TextChanged()]; [Event PreviewMouseDoubleClick]=[TBoxDoubleClick($source)]"
                 Style="{StaticResource SETBoxDefaultStyle}"
                 TabIndex="2"
-                Text="{Binding CurrentAddress.Name, UpdateSourceTrigger=PropertyChanged}"
-                TextWrapping="Wrap" />
-            <!--  Адрес  -->
+                Text="{Binding CurrentAddressInfo.Name, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap">
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                        <cal:ActionMessage MethodName="TextChanged">
+                            <cal:Parameter Value="$source" />
+                            <cal:Parameter Value="$eventArgs" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="TextBox.PreviewMouseDoubleClick">
+                        <cal:ActionMessage MethodName="TBoxDoubleClick">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <!--#endregion-->
+
+            <!--#region  Адрес  -->
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="0"
@@ -105,22 +137,766 @@
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 Margin="2.5"
-                cal:Message.Attach="[Event TextChanged]=[Action TextChanged()]; [Event PreviewMouseDoubleClick]=[TBoxDoubleClick($source)]"
+
                 Style="{StaticResource SETBoxDefaultStyle}"
                 TabIndex="3"
                 Text="{Binding NewAddress, UpdateSourceTrigger=PropertyChanged}"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap">
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                        <cal:ActionMessage MethodName="TextChanged">
+                            <cal:Parameter Value="$source" />
+                            <cal:Parameter Value="$eventArgs" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="TextBox.PreviewMouseDoubleClick">
+                        <cal:ActionMessage MethodName="TBoxDoubleClick">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
             <Button
                 Grid.Row="1"
                 Grid.Column="4"
                 cal:Message.Attach="[Event Click]=[Action SetAddress()]"
                 Content="Установить" />
+            <!--#endregion-->
+
+            <!--#region  Конец серии  -->
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Margin="2.5"
+                    Padding="5,2.5"
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource GrayBrush10}"
+                    FontSize="16"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="Конец серии:" />
+                <TextBox
+                    Grid.Column="1"
+                    Margin="2.5"
+                    Style="{StaticResource SETBoxDefaultStyle}"
+                    Text="{Binding CurrentAddressInfo.FilmEndTime, UpdateSourceTrigger=PropertyChanged}">
+                    <i:Interaction.Triggers>
+                        <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                            <cal:ActionMessage MethodName="TextChanged">
+                                <cal:Parameter Value="$source" />
+                                <cal:Parameter Value="$eventArgs" />
+                            </cal:ActionMessage>
+                        </helpers:RoutedEventTrigger>
+                        <helpers:RoutedEventTrigger RoutedEvent="TextBox.PreviewMouseDoubleClick">
+                            <cal:ActionMessage MethodName="TBoxDoubleClick">
+                                <cal:Parameter Value="$source" />
+                            </cal:ActionMessage>
+                        </helpers:RoutedEventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+                <Button Name="PasteFilmEndTime" Grid.Column="2">
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource PasteBtnIconStyle}" />
+                </Button>
+                <TextBlock
+                    Grid.Column="3"
+                    Margin="2.5"
+                    Padding="5,2.5"
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource GrayBrush10}"
+                    FontSize="16"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0:hh\:mm\:ss}">
+                            <Binding Path="CurrentAddressInfo.FilmEndTime"
+                                     UpdateSourceTrigger="PropertyChanged" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock
+                    Grid.Column="4"
+                    Margin="2.5"
+                    Padding="5,2.5"
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource GrayBrush10}"
+                    FontSize="16"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Общая длительность: {0:hh\:mm\:ss}">
+                            <Binding Path="CurrentAddressInfo.TotalDuration"
+                                     UpdateSourceTrigger="PropertyChanged" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Список джамперов-->
+
+        <Grid
+            Grid.Row="1"
+            Grid.RowSpan="3"
+            Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="2.5"
+                Padding="5,2.5"
+                Background="{StaticResource GrayBrush10}"
+                FontSize="16"
+                Foreground="DodgerBlue"
+                Style="{StaticResource SEDefaultTBlockStyle}"
+                Text="Джамперы" />
+            <ListBox
+                Grid.Row="1"
+                SelectionMode="Extended"
+                Grid.Column="0"
+                Margin="5"
+                ItemsSource="{Binding Jumpers, UpdateSourceTrigger=PropertyChanged}"
+                SelectedItem="{Binding SelectedJumper, UpdateSourceTrigger=PropertyChanged}">
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.MouseDoubleClick">
+                        <cal:ActionMessage MethodName="EditJumper" />
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.SelectionChanged">
+                        <cal:ActionMessage MethodName="SelectionChanged">
+                            <cal:Parameter Value="$source" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Style="{StaticResource CCComboBoxTBlockItemStyle}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}Джампер №{0}">
+                                    <Binding Path="Number" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel
+                Grid.Row="2"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action AddJumper()]"
+                    ToolTip="Добавить новый джампер">
+                    <iconPacks:PackIconMaterial Style="{StaticResource EditListAddBtnIconStyle}" />
+                </Button>
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action RemoveJumper()]"
+                    ToolTip="Удалить выбранный джампер"
+                    ToolTipService.ShowOnDisabled="true">
+                    <iconPacks:PackIconMaterial Style="{StaticResource EditListRemoveBtnIconStyle}" />
+                </Button>
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action AddFirstJumper()]"
+                    ToolTip="Добавить первый джампер пропуска с копированным временем">
+                    <iconPacks:PackIconMaterial Style="{StaticResource AddFirstJumperBtnIconStyle}" />
+                </Button>
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action AddVolumeJumper()]"
+                    ToolTip="Добавить новый звуковой джампер с выбранным звуком">
+                    <iconPacks:PackIconMaterial Style="{StaticResource AddVolumeJumperBtnIconStyle}" />
+                </Button>
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action RefreshJumpersConfig()]"
+                    ToolTip="Обновить и сортировать джамперы">
+                    <iconPacks:PackIconMaterial Style="{StaticResource RefreshConfigBtnIconStyle}" />
+                </Button>
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action CancelSelection()]"
+                    ToolTip="Снять выделение с текущего сезона">
+                    <iconPacks:PackIconMaterial Style="{StaticResource EditListCancelBtnIconStyle}" />
+                </Button>
+                
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Видеоплеер-->
+        <Grid
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <wpf:VideoView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
+                           MediaPlayer="{Binding MediaPlayer}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+
+            <!--#region Слайдер-->
+            <Slider Grid.Row="1" Grid.Column="0"
+                    Minimum="0"
+                    Maximum="{Binding CurrentAddressInfo.TotalDuration.TotalMilliseconds, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                    Interval="100"
+                    Delay="100"
+                    Value="{Binding CurrentEpisodeTime.TotalMilliseconds, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="Thumb.DragStarted">
+                        <cal:ActionMessage MethodName="OnDragStarted">
+                            <cal:Parameter Value="$source" />
+                            <cal:Parameter Value="$eventArgs" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="Thumb.DragDelta">
+                        <cal:ActionMessage MethodName="OnDragDelta">
+                            <cal:Parameter Value="$source" />
+                            <cal:Parameter Value="$eventArgs" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="Thumb.DragCompleted">
+                        <cal:ActionMessage MethodName="OnDragCompleted">
+                            <cal:Parameter Value="$source" />
+                            <cal:Parameter Value="$eventArgs" />
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
+            </Slider>
+            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                       Style="{StaticResource CCComboBoxTBlockItemStyle}">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0:hh\:mm\:ss}\{1:hh\:mm\:ss}">
+                        <Binding Path="CurrentEpisodeTime" UpdateSourceTrigger="PropertyChanged" />
+                        <Binding Path="CurrentAddressInfo.TotalDuration"
+                                 UpdateSourceTrigger="PropertyChanged" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <!--#endregion-->
+
+            <!--#region Кнопки управления плеером-->
+            <Grid Grid.Column="2" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button Name="FastBackward" Margin="5 0 2.5 0" Grid.Row="0">
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource FastBackwardBtnIconStyle}" />
+                </Button>
+                <Button Name="Play" Margin="5 0 2.5 0" Grid.Row="1">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource DefaultMetroButtonStyle}"
+                               TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MediaPlayer.IsPlaying}" Value="False">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <iconPacks:PackIconFontAwesome Style="{StaticResource PlayBtnIconStyle}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MediaPlayer.IsPlaying}" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <iconPacks:PackIconFontAwesome Style="{StaticResource PauseBtnIconStyle}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Name="VolumeUp" Margin="5 0 2.5 0" Grid.Row="2">
+                    <iconPacks:PackIconMaterial Style="{StaticResource VolumeUpBtnIconStyle}" />
+                </Button>
+                <Button Name="Mute" Margin="5 0 2.5 0" Grid.Row="3">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource DefaultMetroButtonStyle}"
+                               TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MediaPlayer.Mute}" Value="False">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <iconPacks:PackIconMaterial Style="{StaticResource MuteBtnIconStyle}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MediaPlayer.Mute}" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <iconPacks:PackIconMaterial Style="{StaticResource UnMuteBtnIconStyle}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Name="DecreaseVideoRate" Margin="2.5 0 5 0" Grid.Row="4">
+                    <iconPacks:PackIconMaterial Style="{StaticResource DecreaseRateBtnIconStyle}" />
+                </Button>
+                <Button Name="DefaultVideoRate" Margin="2.5 0 5 0" Grid.Row="5">
+                    <iconPacks:PackIconMaterial Style="{StaticResource DefaultRateBtnIconStyle}" />
+                </Button>
+            </Grid>
+            <Grid Grid.Column="3" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button Name="FastForward" Margin="2.5 0 5 0" Grid.Row="0">
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource FastForwardBtnIconStyle}" />
+                </Button>
+                <Button Name="CopyCurrentTime" Margin="2.5 0 5 0" Grid.Row="1">
+                    <iconPacks:PackIconFontAwesome Style="{StaticResource CopyTimeBtnIconStyle}" />
+                </Button>
+
+                <Button Name="VolumeDown" Margin="2.5 0 5 0" Grid.Row="2">
+                    <iconPacks:PackIconMaterial Style="{StaticResource VolumeDownBtnIconStyle}" />
+                </Button>
+                <TextBlock
+                    Grid.Row="3"
+                    Margin="2.5"
+                    Padding="5,2.5"
+                    Background="{StaticResource GrayBrush10}"
+                    FontSize="16"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="{Binding MediaPlayer.Volume}" />
+                <Button Name="IncreaseVideoRate" Margin="2.5 0 5 0" Grid.Row="4">
+                    <iconPacks:PackIconMaterial Style="{StaticResource IncreaseRateBtnIconStyle}" />
+                </Button>
+                <TextBlock
+                    Grid.Row="5"
+                    Margin="2.5"
+                    Padding="5,2.5"
+                    Background="{StaticResource GrayBrush10}"
+                    FontSize="16"
+                    Foreground="DodgerBlue"
+                    Style="{StaticResource SEDefaultTBlockStyle}"
+                    Text="{Binding MediaPlayer.Rate}" />
+            </Grid>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Настройки джампера-->
+        <Grid
+            Grid.Row="2"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Margin="5"
+            Visibility="{Binding JumperEditingVisibility}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--#region Номер и режим джампера-->
+            <Grid
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--#region Номер-->
+                <Grid
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="0,0,5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2.5"
+                        Padding="5,2.5"
+                        Background="{StaticResource GrayBrush10}"
+                        FontSize="16"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Номер:" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding NewJumperNumber, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                        <i:Interaction.Triggers>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.KeyDown">
+                                <cal:ActionMessage MethodName="NumericValidation">
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                                <cal:ActionMessage MethodName="TextChanged">
+                                    <cal:Parameter Value="$source" />
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        cal:Message.Attach="[Event Click]=[Action SetJumperNumber()]"
+                        Content="Установить" />
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Режим-->
+                <Grid Grid.Row="0" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2.5"
+                        Padding="5,2.5"
+                        Background="{StaticResource GrayBrush10}"
+                        FontSize="16"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Режим:" />
+                    <ComboBox
+                        Grid.Row="0"
+
+                        Grid.Column="1"
+                        ItemsSource="{Binding JumperModes}"
+                        SelectedItem="{Binding SelectedJumper.JumperMode}">
+                        <i:Interaction.Triggers>
+                            <helpers:RoutedEventTrigger RoutedEvent="ComboBox.SelectionChanged">
+                                <cal:ActionMessage MethodName="CbSelectionChanged">
+                                    <cal:Parameter Value="$source" />
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+
+                </Grid>
+
+                <!--#endregion-->
+
+            </Grid>
+
+            <!--#endregion-->
+
+            <!--#region Время начала и конца-->
+            <Grid
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--#region Время начала-->
+                <Grid
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="0,0,5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2.5"
+                        Padding="5,2.5"
+                        Background="{StaticResource GrayBrush10}"
+                        FontSize="16"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Начало:" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding SelectedJumper.StartTime, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                        <i:Interaction.Triggers>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.KeyDown">
+                                <cal:ActionMessage MethodName="NumericValidation">
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                                <cal:ActionMessage MethodName="TextChanged">
+                                    <cal:Parameter Value="$source" />
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <Button Name="PasteStartTime" Grid.Column="2">
+                        <iconPacks:PackIconFontAwesome Style="{StaticResource PasteBtnIconStyle}" />
+                    </Button>
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Время конца-->
+                <Grid
+                    Visibility="{Binding EndValueVisibility}"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="0,0,5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2.5"
+                        Padding="5,2.5"
+                        Background="{StaticResource GrayBrush10}"
+                        FontSize="16"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Конец:" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding SelectedJumper.EndTime, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                        <i:Interaction.Triggers>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.KeyDown">
+                                <cal:ActionMessage MethodName="NumericValidation">
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                                <cal:ActionMessage MethodName="TextChanged">
+                                    <cal:Parameter Value="$source" />
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <Button Name="PasteEndTime" Grid.Column="2">
+                        <iconPacks:PackIconFontAwesome Style="{StaticResource PasteBtnIconStyle}" />
+                    </Button>
+                </Grid>
+                <!--#endregion-->
+
+
+            </Grid>
+            <!--#endregion-->
+
+            <!--#region Значения-->
+            <Grid
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--#region Громкость-->
+                <Grid
+                    Visibility="{Binding VolumeValueVisibility}"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="0,0,5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2.5"
+                        Padding="5,2.5"
+                        Background="{StaticResource GrayBrush10}"
+                        FontSize="16"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Громкость:" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding SelectedJumper.StandardVolumeValue, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                        <i:Interaction.Triggers>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.KeyDown">
+                                <cal:ActionMessage MethodName="NumericValidation">
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                                <cal:ActionMessage MethodName="TextChanged">
+                                    <cal:Parameter Value="$source" />
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <!--<Button Grid.Column="2">
+                        <iconPacks:PackIconFontAwesome Style="{StaticResource PasteBtnIconStyle}" />
+                    </Button>-->
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region Иное-->
+                <!--<Grid
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="0,0,5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2.5"
+                        Padding="5,2.5"
+                        Background="{StaticResource GrayBrush10}"
+                        FontSize="16"
+                        Foreground="DodgerBlue"
+                        Style="{StaticResource SEDefaultTBlockStyle}"
+                        Text="Конец:" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SETBoxDefaultStyle}"
+                        Text="{Binding NewJumperNumber, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}">
+                        <i:Interaction.Triggers>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.KeyDown">
+                                <cal:ActionMessage MethodName="NumericValidation">
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                            <helpers:RoutedEventTrigger RoutedEvent="TextBox.TextChanged">
+                                <cal:ActionMessage MethodName="TextChanged">
+                                    <cal:Parameter Value="$source" />
+                                    <cal:Parameter Value="$eventArgs" />
+                                </cal:ActionMessage>
+                            </helpers:RoutedEventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <Button Grid.Column="2">
+                        <iconPacks:PackIconFontAwesome Style="{StaticResource PasteFilmEndTimeBtnIconStyle}" />
+                    </Button>
+                </Grid>-->
+                <!--#endregion-->
+            </Grid>
+
+            <!--#endregion-->
+
         </Grid>
         <!--#endregion-->
 
         <!--#region Сохранение и отмена изменений-->
         <Grid
-            Grid.Row="1"
+            Grid.Row="3"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Margin="5">
@@ -165,228 +941,6 @@
             </Button>
         </Grid>
         <!--#endregion-->
-
-        <!--#region Список джамперов-->
-
-        <Grid
-            Grid.Row="1"
-            Grid.RowSpan="3"
-            Grid.Column="0"
-            IsEnabled="{Binding IsInterfaceUnlocked}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Row="0"
-                Grid.Column="0"
-                Margin="2.5"
-                Padding="5,2.5"
-                Background="{StaticResource GrayBrush10}"
-                FontSize="16"
-                Foreground="DodgerBlue"
-                Style="{StaticResource SEDefaultTBlockStyle}"
-                Text="Джамперы" />
-            <ListBox
-                Grid.Row="1"
-                Grid.Column="0"
-                Margin="5"
-                ItemsSource="{Binding Jumpers}"
-                SelectedItem="{Binding SelectedJumper}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Style="{StaticResource CCComboBoxTBlockItemStyle}">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{Джампер №}{0}">
-                                    <Binding Path="Number" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <StackPanel
-                Grid.Row="1"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                Orientation="Vertical">
-                <Button
-                    Margin="0,2.5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action SelectJumper()]"
-                    ToolTip="Выбрать первый джампер, если список не реагирует на курсор">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListSelectBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action AddJumper()]"
-                    ToolTip="Добавить новый сезон">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListAddBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action EditJumper()]"
-                    ToolTip="Редактировать выбранный сезон">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListEditBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action RemoveJumper()]"
-                    ToolTip="Удалить последний эпизод"
-                    ToolTipService.ShowOnDisabled="true">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListRemoveBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event Click]=[Action CancelSelection()]"
-                    ToolTip="Снять выделение с текущего сезона">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListCancelBtnIconStyle}" />
-                </Button>
-            </StackPanel>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Видеоплеер-->
-        <Grid
-            Grid.Row="2"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            MinHeight="100">
-            <ContentControl
-                Grid.Row="0"
-                Grid.Column="0"
-                Content="{x:Static helpers:SystemVariables.Vlc}" />
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Настройки джампера-->
-        <Grid
-            Grid.Row="3"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Margin="5"
-            Visibility="{Binding JumperEditingVisibility}">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!--#region Номер и режим джампера-->
-            <Grid
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <!--#region Номер-->
-                <Grid
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="0,0,5,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="2.5"
-                        Padding="5,2.5"
-                        Background="{StaticResource GrayBrush10}"
-                        FontSize="16"
-                        Foreground="DodgerBlue"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="Номер:" />
-                    <TextBox
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        MinWidth="50"
-                        VerticalAlignment="Center"
-                        cal:Message.Attach="[Event TextChanged]=[Action NumericValidation($eventArgs)]"
-                        Style="{StaticResource SETBoxDefaultStyle}"
-                        Text="{Binding NewJumperNumber, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" />
-                    <Button
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        cal:Message.Attach="[Event Click]=[Action SetJumperNumber()]"
-                        Content="Установить" />
-                </Grid>
-                <!--#endregion-->
-
-                <!--#region Режим-->
-                <Grid Grid.Row="0" Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="2.5"
-                        Padding="5,2.5"
-                        Background="{StaticResource GrayBrush10}"
-                        FontSize="16"
-                        Foreground="DodgerBlue"
-                        Style="{StaticResource SEDefaultTBlockStyle}"
-                        Text="Режим:" />
-                    <ComboBox
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        ItemsSource="{Binding JumperModes}"
-                        SelectedItem="{Binding SelectedJumper.JumperMode}" />
-                </Grid>
-                <!--#endregion-->
-            </Grid>
-
-
-            <!--#endregion-->
-
-
-
-
-
-
-
-
-
-        </Grid>
-        <!--#endregion-->
-
 
     </Grid>
 </UserControl>

@@ -16,6 +16,17 @@
 
     public class MainViewModel : Conductor<Screen>.Collection.OneActive
     {
+        private WindowState _windowState;
+
+        public WindowState WindowState
+        {
+            get => _windowState;
+            set
+            {
+                _windowState = value;
+                NotifyOfPropertyChange(()=> WindowState);
+            }
+        }
 
         protected override void OnViewLoaded(object view)
         {

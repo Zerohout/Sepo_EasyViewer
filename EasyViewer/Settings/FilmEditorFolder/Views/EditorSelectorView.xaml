@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     cal:Bind.AtDesignTime="True"
     xmlns:stat="clr-namespace:EasyViewer.Helpers"
-    d:DataContext="{d:DesignData Source=../DesignData/FilmsEditorViewDesignData.xaml}"
+    d:DataContext="{d:DesignData Source=../DesignData/EditorSelectorViewDesignData.xaml}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="True"

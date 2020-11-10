@@ -1,352 +1,334 @@
 ﻿namespace EasyViewer.ViewModels
 {
-	using System;
-	using System.Diagnostics;
-	using System.Drawing;
-	using System.Threading;
-	using System.Windows;
-	using System.Windows.Media;
-	using Caliburn.Micro;
-	using Helpers;
-	using static Helpers.SystemVariables;
-	using Color = System.Windows.Media.Color;
-	using Timer = System.Timers.Timer;
+    using System;
+    using System.Windows;
+    using System.Windows.Media;
+    using Caliburn.Micro;
+    using Helpers;
+    using static Helpers.SystemVariables;
 
+    public class WaitViewModel : Screen
+    {
+        private Visibility _addressesVisibility;
+        private int _currentAddressNumber;
+        private int _currentEpisodeValue;
+        private LoadingStatus _currentLoadingStatus;
+        private int _currentPercentValue;
+        private int _currentSeasonValue;
+        private TimeSpan _elapsedTime;
+        private Visibility _episodesVisibility;
+        private byte _g;
+        private string _loadingStatus;
+        private int _maxAddressNumber;
+        private int _maxEpisodeValue;
+        private int _maxPercentValue;
+        private int _maxSeasonValue;
+        private byte _r = 255;
+        private TimeSpan _remainingTime;
+        
 
-	public class WaitViewModel : Screen
-	{
-		private int _currentPercentValue;
-		private int _maxPercentValue;
-		private int _currentSeasonValue;
-		private int _maxSeasonValue;
-		private int _currentEpisodeValue;
-		private int _maxEpisodeValue;
-		private int _currentAddressNumber;
-		private int _maxAddressNumber;
-		private TimeSpan _remainingTime;
-		private TimeSpan _elapsedTime;
-		private byte r = 255;
-		private byte g;
-		private string _loadingStatus;
-		private LoadingStatus _currentLoadingStatus;
-		private Visibility _episodesVisibility;
-		private Visibility _addressesVisibility;
+        /// <summary>
+        ///     Сброс цвета
+        /// </summary>
+        public void ResetRGB()
+        {
+            _r = 255;
+            _g = 0;
+        }
 
-		#region Текстовые свойства отображения данных
+        /// <summary>
+        ///     Сброс всех данных загрузки
+        /// </summary>
+        public void ResetLoadingData()
+        {
+            MaxSeasonValue = 0;
+            CurrentSeasonValue = 0;
+            MaxEpisodeValue = 0;
+            CurrentEpisodeValue = 0;
+            MaxAddressNumber = 0;
+            CurrentAddressNumber = 0;
+        }
 
-		/// <summary>
-		/// Текущий статус загрузки данных
-		/// </summary>
-		public LoadingStatus CurrentLoadingStatus
-		{
-			get => _currentLoadingStatus;
-			set
-			{
-				switch (value)
-				{
-					case SystemVariables.LoadingStatus.Create_Seasons:
-						LoadingStatus = "Создание сезонов 1/4";
-						EpisodesVisibility = Visibility.Hidden;
-						AddressesVisibility = Visibility.Hidden;
-						break;
-					case SystemVariables.LoadingStatus.Create_Episodes:
-						LoadingStatus = "Создание эпизодов 2/4";
-						EpisodesVisibility = Visibility.Visible;
-						AddressesVisibility = Visibility.Hidden;
+        /// <summary>
+        ///     Сбросить текущие данные
+        /// </summary>
+        /// <param name="isResetEpisodes">Если истина, сброс текущего значения эпизодов</param>
+        /// <param name="isResetAddresses">Если истина, сброс текущего значения адресов</param>
+        public void ResetCurrentLoadingData(bool isResetEpisodes = false, bool isResetAddresses = false)
+        {
+            if (isResetEpisodes is true) CurrentEpisodeValue = 0;
+            if (isResetAddresses is true) CurrentAddressNumber = 0;
+        }
 
-						break;
-					case SystemVariables.LoadingStatus.Create_Addresses:
-						LoadingStatus = "Создание адресов 3/4";
-						EpisodesVisibility = Visibility.Visible;
-						AddressesVisibility = Visibility.Visible;
-						break;
-					case SystemVariables.LoadingStatus.Add_Durations:
-						LoadingStatus = "Добавление длительностей 4/4";
-						EpisodesVisibility = Visibility.Visible;
-						AddressesVisibility = Visibility.Visible;
-						break;
-				}
-				
-				ResetLoadingData();
-				CurrentPercentValue = 0;
-				_currentLoadingStatus = value;
-				ResetRGB();
-				NotifyOfPropertyChange(() => CurrentLoadingStatus);
-			}
-		}
+        /// <summary>
+        ///     Отмена операции
+        /// </summary>
+        public void CancelOperation()
+        {
+            AddingFilmCancellationTokenSource.Cancel();
+        }
 
-		public SolidColorBrush ProgressBarForeground => GetRGBColor(Procents);
+        /// <summary>
+        ///     Получить цвет полосы прогресса
+        /// </summary>
+        /// <param name="currentValue">Текущее значение</param>
+        /// <returns></returns>
+        private SolidColorBrush GetRGBColor(int currentValue)
+        {
+            if (currentValue > 100) return new SolidColorBrush(Color.FromRgb(0, 255, 0));
 
-		/// <summary>
-		/// Процентное соотношение прогресса операции
-		/// </summary>
-		public int Procents => GetPercent(_maxPercentValue, _currentPercentValue);
+            if (currentValue <= 50)
+                _g = (byte) (currentValue * 5.1);
+            else
+                _r = (byte) (255 - (int) ((currentValue - 50) * 5.1));
 
-		/// <summary>
-		/// Примерное оставшееся время завершения операции
-		/// </summary>
-		public TimeSpan RemainingTime
-		{
-			get => _remainingTime;
-			set
-			{
-				if (_currentPercentValue < 1)
-				{
-					_remainingTime = TimeSpan.FromMilliseconds((long)(value.TotalMilliseconds * _maxPercentValue));
-				}
-				else
-				{
-					var max = (long)(value.TotalMilliseconds / _currentPercentValue) * _maxPercentValue;
-					_remainingTime = TimeSpan.FromMilliseconds((long)(max - value.TotalMilliseconds));
-				}
+            return new SolidColorBrush(Color.FromRgb(_r, _g, 0));
+        }
 
-				NotifyOfPropertyChange(() => RemainingTime);
-			}
-		}
+        /// <summary>
+        ///     Получение процентного соотношения числа a от числа b
+        /// </summary>
+        /// <param name="b">Число b</param>
+        /// <param name="a">Число а</param>
+        /// <returns></returns>
+        public static int GetPercent(int b, int a)
+        {
+            if (b == 0) return 0;
 
-		/// <summary>
-		/// Прошешее время
-		/// </summary>
-		public TimeSpan ElapsedTime
-		{
-			get => _elapsedTime;
-			set
-			{
-				_elapsedTime = value;
-				NotifyOfPropertyChange(() => ElapsedTime);
-			}
-		}
+            return (int) (a / (b / 100M));
+        }
 
-		/// <summary>
-		/// Свойство Visibility отображения информации об эпизодах
-		/// </summary>
-		public Visibility EpisodesVisibility
-		{
-			get => _episodesVisibility;
-			set
-			{
-				_episodesVisibility = value;
-				NotifyOfPropertyChange(() => EpisodesVisibility);
-			}
-		}
+        #region Текстовые свойства отображения данных
 
-		/// <summary>
-		/// Свойство Visibility отображения информации об адресах
-		/// </summary>
-		public Visibility AddressesVisibility
-		{
-			get => _addressesVisibility;
-			set
-			{
-				_addressesVisibility = value;
-				NotifyOfPropertyChange(() => AddressesVisibility);
-			}
-		}
+        /// <summary>
+        ///     Текущий статус загрузки данных
+        /// </summary>
+        public LoadingStatus CurrentLoadingStatus
+        {
+            get => _currentLoadingStatus;
+            set
+            {
+                switch (value)
+                {
+                    case SystemVariables.LoadingStatus.CreatingSeasons:
+                        LoadingStatus = "Создание сезонов 1/4";
+                        EpisodesVisibility = Visibility.Hidden;
+                        AddressesVisibility = Visibility.Hidden;
+                        break;
+                    case SystemVariables.LoadingStatus.CreatingEpisodes:
+                        LoadingStatus = "Создание эпизодов 2/4";
+                        EpisodesVisibility = Visibility.Visible;
+                        AddressesVisibility = Visibility.Hidden;
 
-		/// <summary>
-		/// Текущее значение для подсчета процентов
-		/// </summary>
-		public int CurrentPercentValue
-		{
-			get => _currentPercentValue;
-			set
-			{
-				_currentPercentValue = value;
-				NotifyOfPropertyChange(() => CurrentPercentValue);
-			}
-		}
+                        break;
+                    case SystemVariables.LoadingStatus.CreatingAddresses:
+                        LoadingStatus = "Создание адресов 3/4";
+                        EpisodesVisibility = Visibility.Visible;
+                        AddressesVisibility = Visibility.Visible;
+                        break;
+                    case SystemVariables.LoadingStatus.AddingDurations:
+                        LoadingStatus = "Добавление длительностей 4/4";
+                        EpisodesVisibility = Visibility.Visible;
+                        AddressesVisibility = Visibility.Visible;
+                        break;
+                }
 
-		/// <summary>
-		/// Максимальное значение для подсчета процентов
-		/// </summary>
-		public int MaxPercentValue
-		{
-			get => _maxPercentValue;
-			set
-			{
-				_maxPercentValue = value;
-				NotifyOfPropertyChange(() => MaxPercentValue);
-			}
-		}
+                ResetLoadingData();
+                CurrentPercentValue = 0;
+                _currentLoadingStatus = value;
+                ResetRGB();
+                NotifyOfPropertyChange(() => CurrentLoadingStatus);
+            }
+        }
 
-		/// <summary>
-		/// Номер текущего сезона
-		/// </summary>
-		public int CurrentSeasonValue
-		{
-			get => _currentSeasonValue;
-			set
-			{
-				_currentSeasonValue = value;
-				NotifyOfPropertyChange(() => CurrentSeasonValue);
-			}
-		}
+        public SolidColorBrush ProgressBarForeground => GetRGBColor(Procents);
 
-		/// <summary>
-		/// Максимальное количество сезонов
-		/// </summary>
-		public int MaxSeasonValue
-		{
-			get => _maxSeasonValue;
-			set
-			{
-				_maxSeasonValue = value;
-				NotifyOfPropertyChange(() => MaxSeasonValue);
-			}
-		}
+        /// <summary>
+        ///     Процентное соотношение прогресса операции
+        /// </summary>
+        public int Procents => GetPercent(_maxPercentValue, _currentPercentValue);
 
-		/// <summary>
-		/// Номер текущего эпизода
-		/// </summary>
-		public int CurrentEpisodeValue
-		{
-			get => _currentEpisodeValue;
-			set
-			{
-				_currentEpisodeValue = value;
-				NotifyOfPropertyChange(() => CurrentEpisodeValue);
-				NotifyOfPropertyChange(() => ProgressBarForeground);
-				NotifyOfPropertyChange(() => RemainingTime);
-				NotifyOfPropertyChange(() => Procents);
-			}
-		}
+        /// <summary>
+        ///     Примерное оставшееся время завершения операции
+        /// </summary>
+        public TimeSpan RemainingTime
+        {
+            get => _remainingTime;
+            set
+            {
+                if (_currentPercentValue <= 1)
+                {
+                    _remainingTime = TimeSpan.FromMilliseconds((long) (value.TotalMilliseconds * MaxPercentValue));
+                }
+                else
+                {
+                    var max = (long) (value.TotalMilliseconds / _currentPercentValue) * MaxPercentValue;
+                    _remainingTime = TimeSpan.FromMilliseconds((long) (max - value.TotalMilliseconds));
+                }
 
-		/// <summary>
-		/// Максимальное количество эпизодов
-		/// </summary>
-		public int MaxEpisodeValue
-		{
-			get => _maxEpisodeValue;
-			set
-			{
-				_maxEpisodeValue = value;
-				NotifyOfPropertyChange(() => MaxEpisodeValue);
-			}
-		}
+                NotifyOfPropertyChange(() => RemainingTime);
+            }
+        }
 
-		/// <summary>
-		/// Номер текущего адреса
-		/// </summary>
-		public int CurrentAddressNumber
-		{
-			get => _currentAddressNumber;
-			set
-			{
-				_currentAddressNumber = value;
-				NotifyOfPropertyChange(() => CurrentAddressNumber);
-			}
-		}
+        /// <summary>
+        ///     Прошешее время
+        /// </summary>
+        public TimeSpan ElapsedTime
+        {
+            get => _elapsedTime;
+            set
+            {
+                _elapsedTime = value;
+                NotifyOfPropertyChange(() => ElapsedTime);
+            }
+        }
 
-		/// <summary>
-		/// Максимальное количество адресов
-		/// </summary>
-		public int MaxAddressNumber
-		{
-			get => _maxAddressNumber;
-			set
-			{
-				_maxAddressNumber = value;
-				NotifyOfPropertyChange(() => MaxAddressNumber);
-			}
-		}
+        /// <summary>
+        ///     Свойство Visibility отображения информации об эпизодах
+        /// </summary>
+        public Visibility EpisodesVisibility
+        {
+            get => _episodesVisibility;
+            set
+            {
+                _episodesVisibility = value;
+                NotifyOfPropertyChange(() => EpisodesVisibility);
+            }
+        }
 
-		/// <summary>
-		/// Текущий статус загрузки
-		/// </summary>
-		public string LoadingStatus
-		{
-			get => _loadingStatus;
-			set
-			{
-				_loadingStatus = value;
-				NotifyOfPropertyChange(() => LoadingStatus);
-			}
-		}
+        /// <summary>
+        ///     Свойство Visibility отображения информации об адресах
+        /// </summary>
+        public Visibility AddressesVisibility
+        {
+            get => _addressesVisibility;
+            set
+            {
+                _addressesVisibility = value;
+                NotifyOfPropertyChange(() => AddressesVisibility);
+            }
+        }
 
-		#endregion
+        /// <summary>
+        ///     Текущее значение для подсчета процентов
+        /// </summary>
+        public int CurrentPercentValue
+        {
+            get => _currentPercentValue;
+            set
+            {
+                _currentPercentValue = value;
+                NotifyOfPropertyChange(() => CurrentPercentValue);
+            }
+        }
 
-		/// <summary>
-		/// Сброс цвета
-		/// </summary>
-		public void ResetRGB()
-		{
-			r = 255;
-			g = 0;
-		}
+        /// <summary>
+        ///     Максимальное значение для подсчета процентов
+        /// </summary>
+        public int MaxPercentValue
+        {
+            get => _maxPercentValue;
+            set
+            {
+                _maxPercentValue = value;
+                NotifyOfPropertyChange(() => MaxPercentValue);
+            }
+        }
 
-		/// <summary>
-		/// Сброс всех данных загрузки
-		/// </summary>
-		public void ResetLoadingData()
-		{
-			MaxSeasonValue = 0;
-			CurrentSeasonValue = 0;
-			MaxEpisodeValue = 0;
-			CurrentEpisodeValue = 0;
-			MaxAddressNumber = 0;
-			CurrentAddressNumber = 0;
-		}
+        /// <summary>
+        ///     Номер текущего сезона
+        /// </summary>
+        public int CurrentSeasonValue
+        {
+            get => _currentSeasonValue;
+            set
+            {
+                _currentSeasonValue = value;
+                NotifyOfPropertyChange(() => CurrentSeasonValue);
+            }
+        }
 
-		/// <summary>
-		/// Сбросить текущие данные
-		/// </summary>
-		/// <param name="isResetEpisodes">Если истина, сброс текущего значения эпизодов</param>
-		/// <param name="isResetAddresses">Если истина, сброс текущего значения адресов</param>
-		public void ResetCurrentLoadingData(bool isResetEpisodes = false, bool isResetAddresses = false)
-		{
-			if (isResetEpisodes is true) CurrentEpisodeValue = 0;
-			if (isResetAddresses is true) CurrentAddressNumber = 0;
-		}
+        /// <summary>
+        ///     Максимальное количество сезонов
+        /// </summary>
+        public int MaxSeasonValue
+        {
+            get => _maxSeasonValue;
+            set
+            {
+                _maxSeasonValue = value;
+                NotifyOfPropertyChange(() => MaxSeasonValue);
+            }
+        }
 
+        /// <summary>
+        ///     Номер текущего эпизода
+        /// </summary>
+        public int CurrentEpisodeValue
+        {
+            get => _currentEpisodeValue;
+            set
+            {
+                _currentEpisodeValue = value;
+                NotifyOfPropertyChange(() => CurrentEpisodeValue);
+                NotifyOfPropertyChange(() => ProgressBarForeground);
+                NotifyOfPropertyChange(() => RemainingTime);
+                NotifyOfPropertyChange(() => Procents);
+            }
+        }
 
+        /// <summary>
+        ///     Максимальное количество эпизодов
+        /// </summary>
+        public int MaxEpisodeValue
+        {
+            get => _maxEpisodeValue;
+            set
+            {
+                _maxEpisodeValue = value;
+                NotifyOfPropertyChange(() => MaxEpisodeValue);
+            }
+        }
 
+        /// <summary>
+        ///     Номер текущего адреса
+        /// </summary>
+        public int CurrentAddressNumber
+        {
+            get => _currentAddressNumber;
+            set
+            {
+                _currentAddressNumber = value;
+                NotifyOfPropertyChange(() => CurrentAddressNumber);
+            }
+        }
 
-		public Timer Timer { get; set; }
-		public Stopwatch Stopwatch { get; set; }
+        /// <summary>
+        ///     Максимальное количество адресов
+        /// </summary>
+        public int MaxAddressNumber
+        {
+            get => _maxAddressNumber;
+            set
+            {
+                _maxAddressNumber = value;
+                NotifyOfPropertyChange(() => MaxAddressNumber);
+            }
+        }
 
-		/// <summary>
-		/// Отмена операции
-		/// </summary>
-		public void CancelOperation()
-		{
-			AddingFilmCancellationTokenSource.Cancel();
-		}
+        /// <summary>
+        ///     Текущий статус загрузки
+        /// </summary>
+        public string LoadingStatus
+        {
+            get => _loadingStatus;
+            set
+            {
+                _loadingStatus = value;
+                NotifyOfPropertyChange(() => LoadingStatus);
+            }
+        }
 
-		/// <summary>
-		/// Получить цвет полосы прогресса
-		/// </summary>
-		/// <param name="currentValue">Текущее значение</param>
-		/// <returns></returns>
-		private SolidColorBrush GetRGBColor(int currentValue)
-		{
-			if (currentValue > 100) return new SolidColorBrush(Color.FromRgb(0, 255, 0));
-
-
-			if (currentValue <= 50)
-			{
-				g = (byte)(currentValue * 5.1);
-			}
-			else
-			{
-				r = (byte)(255 - (int)((currentValue - 50) * 5.1));
-			}
-
-			return new SolidColorBrush(Color.FromRgb(r, g, 0));
-		}
-
-		/// <summary>
-		/// Получение процентного соотношения числа a от числа b
-		/// </summary>
-		/// <param name="b">Число b</param>
-		/// <param name="a">Число а</param>
-		/// <returns></returns>
-		public static int GetPercent(int b, int a)
-		{
-			if (b == 0) return 0;
-
-			return (int)(a / (b / 100M));
-		}
-
-
-	}
+        #endregion
+    }
 }

@@ -7,6 +7,8 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:helpers="clr-namespace:EasyViewer.Helpers"
     cal:Bind.AtDesignTime="True"
     d:DataContext="{d:DesignData Source=../DesignData/EpisodesEditorViewDesignData.xaml}"
     d:DesignHeight="450"
@@ -19,8 +21,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3.5*" />
-            <ColumnDefinition Width="6.5*" />
+            <ColumnDefinition Width="2.5*" />
+            <ColumnDefinition Width="7.5*" />
         </Grid.ColumnDefinitions>
 
         <!--#region Column 0-->
@@ -46,13 +48,24 @@
                 Style="{StaticResource SEDefaultTBlockStyle}"
                 Text="Список адресов" />
             <ListBox
+                SelectionMode="Extended"
                 ItemsSource="{Binding Addresses, UpdateSourceTrigger=PropertyChanged}"
-                SelectedItem="{Binding SelectedAddress, UpdateSourceTrigger=PropertyChanged}"
+                SelectedItem="{Binding SelectedAddressInfo, UpdateSourceTrigger=PropertyChanged}"
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="5"
-                cal:Message.Attach="[Event MouseDoubleClick]=[Action EditAddress()]"
                 >
+                <i:Interaction.Triggers>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.MouseDoubleClick">
+                        <cal:ActionMessage MethodName="EditAddress">
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                    <helpers:RoutedEventTrigger RoutedEvent="ListBox.SelectionChanged">
+                        <cal:ActionMessage MethodName="SelectionChanged">
+                            <cal:Parameter Value="$source"/>
+                        </cal:ActionMessage>
+                    </helpers:RoutedEventTrigger>
+                </i:Interaction.Triggers>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock
@@ -136,6 +149,14 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
+                </Button>
+                <Button
+                    Margin="0,2.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event Click]=[Action SetDefaultAddress()]">
+                    <iconPacks:PackIconMaterial Style="{StaticResource SetDefaultAddressBtnIconStyle}" />
+                    
                 </Button>
                 <Button
                     Margin="0,2.5"

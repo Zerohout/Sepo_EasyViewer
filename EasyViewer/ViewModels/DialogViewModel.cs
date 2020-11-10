@@ -57,19 +57,19 @@
 
                 switch (_currentType)
                 {
-                    case DialogType.SAVE_CHANGES:
+                    case DialogType.SaveChanges:
                         return "Сохранить изменения?";
-                    case DialogType.CANCEL_CHANGES:
+                    case DialogType.CancelChanges:
                         return "Отменить изменения?";
-                    case DialogType.REMOVE_OBJECT:
+                    case DialogType.RemoveObject:
                         return "Удалить объект?";
-                    case DialogType.OVERWRITE_FILE:
+                    case DialogType.OverwriteFile:
                         return "Перезаписать файл?";
-                    case DialogType.QUESTION:
+                    case DialogType.Question:
                         return "Вы хотите это сделать?";
-                    case DialogType.INFO:
+                    case DialogType.Info:
                         return "Информация.";
-                    case DialogType.ERROR:
+                    case DialogType.Error:
                         return "Ошибка";
                     default:
                         throw new Exception("Некорректный DialogType");
@@ -87,19 +87,19 @@
 
                 switch (_currentType)
                 {
-                    case DialogType.SAVE_CHANGES:
+                    case DialogType.SaveChanges:
                         return "Сохранить ваши изменения?";
-                    case DialogType.CANCEL_CHANGES:
+                    case DialogType.CancelChanges:
                         return "Отменить ваши изменения?";
-                    case DialogType.REMOVE_OBJECT:
+                    case DialogType.RemoveObject:
                         return $"Вы действительно хотите удалить выбранный объект?";
-                    case DialogType.OVERWRITE_FILE:
+                    case DialogType.OverwriteFile:
                         return "Файл уже существует, перезаписать его?";
-                    case DialogType.QUESTION:
+                    case DialogType.Question:
                         return "Да или нет?";
-                    case DialogType.INFO:
+                    case DialogType.Info:
                         return "Информация для пользователя.";
-                    case DialogType.ERROR:
+                    case DialogType.Error:
                         return "Произошла ошибка.";
                     default:
                         throw new Exception("Некорректный DialogType");
@@ -111,24 +111,24 @@
         /// Видимость кнопки Yes
         /// </summary>
         public Visibility YesVisibility =>
-            CurrentType == DialogType.SAVE_CHANGES ||
-            CurrentType == DialogType.CANCEL_CHANGES ||
-            CurrentType == DialogType.REMOVE_OBJECT ||
-            CurrentType == DialogType.QUESTION ||
-            CurrentType == DialogType.OVERWRITE_FILE ||
-            CurrentType == DialogType.ERROR
+            CurrentType == DialogType.SaveChanges ||
+            CurrentType == DialogType.CancelChanges ||
+            CurrentType == DialogType.RemoveObject ||
+            CurrentType == DialogType.Question ||
+            CurrentType == DialogType.OverwriteFile ||
+            CurrentType == DialogType.Error
                 ? Visibility.Visible
                 : Visibility.Hidden;
         /// <summary>
         /// Видимость кнопки No
         /// </summary>
         public Visibility NoVisibility =>
-            CurrentType == DialogType.SAVE_CHANGES ||
-            CurrentType == DialogType.CANCEL_CHANGES ||
-            CurrentType == DialogType.REMOVE_OBJECT ||
-            CurrentType == DialogType.QUESTION ||
-            CurrentType == DialogType.OVERWRITE_FILE ||
-            CurrentType == DialogType.ERROR
+            CurrentType == DialogType.SaveChanges ||
+            CurrentType == DialogType.CancelChanges ||
+            CurrentType == DialogType.RemoveObject ||
+            CurrentType == DialogType.Question ||
+            CurrentType == DialogType.OverwriteFile ||
+            CurrentType == DialogType.Error
                 ? Visibility.Visible
                 : Visibility.Hidden;
 
@@ -136,15 +136,15 @@
         /// Видимость кнопки Cancel
         /// </summary>
         public Visibility CancelVisibility =>
-            CurrentType == DialogType.SAVE_CHANGES
+            CurrentType == DialogType.SaveChanges
                 ? Visibility.Visible
                 : Visibility.Hidden;
         /// <summary>
         /// Видимость кнопки Ok
         /// </summary>
         public Visibility OkVisibility =>
-            CurrentType == DialogType.INFO ||
-            CurrentType == DialogType.ERROR
+            CurrentType == DialogType.Info ||
+            CurrentType == DialogType.Error
                 ? Visibility.Visible
                 : Visibility.Hidden;
 
@@ -153,13 +153,13 @@
         /// </summary>
         public void YesAction()
         {
-            if (CurrentType == DialogType.ERROR)
+            if (CurrentType == DialogType.Error)
             {
                 Clipboard.SetText(_message);
-                var dvm = new DialogViewModel("Сохранить информацию ошибки в файл?", DialogType.QUESTION);
+                var dvm = new DialogViewModel("Сохранить информацию ошибки в файл?", DialogType.Question);
                 WinMan.ShowDialog(dvm);
 
-                if (dvm.DialogResult == DialogResult.YES_ACTION)
+                if (dvm.DialogResult == DialogResult.YesAction)
                 {
                     CreateErrorLog();
                 }
@@ -168,7 +168,7 @@
                 return;
             }
 
-            DialogResult = DialogResult.YES_ACTION;
+            DialogResult = DialogResult.YesAction;
             TryClose();
         }
 
@@ -177,7 +177,7 @@
         /// </summary>
         public void NoAction()
         {
-            if (CurrentType == DialogType.ERROR)
+            if (CurrentType == DialogType.Error)
             {
                 CreateErrorLog();
                 TryClose();
@@ -185,7 +185,7 @@
 
             }
 
-            DialogResult = DialogResult.NO_ACTION;
+            DialogResult = DialogResult.NoAction;
             TryClose();
         }
 
@@ -195,7 +195,7 @@
         /// </summary>
         public void CancelAction()
         {
-            DialogResult = DialogResult.CANCEL_ACTION;
+            DialogResult = DialogResult.CancelAction;
             TryClose();
         }
 
@@ -218,7 +218,7 @@
             }
 
             WinMan.ShowDialog(new DialogViewModel("Данные об ошибке сохранены в папке ErrorLogs в папке приложения",
-                                                  DialogType.INFO));
+                                                  DialogType.Info));
         }
 
         /// <summary>

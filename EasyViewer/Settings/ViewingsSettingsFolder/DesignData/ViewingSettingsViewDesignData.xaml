@@ -35,8 +35,24 @@
         <filmModels:Season Number="10" Checked="False"/>
     </viewModels:ViewingsSettingsViewModel.Seasons>
     <viewModels:ViewingsSettingsViewModel.SelectedSeason>
-        <filmModels:Season Number="1"/>
+        <filmModels:Season Number="1" Checked="True"/>
     </viewModels:ViewingsSettingsViewModel.SelectedSeason>
 
+    <viewModels:ViewingsSettingsViewModel.Episodes>
+        <filmModels:Episode Number="1" Checked="True"/>
+        <filmModels:Episode Number="2" Checked="False"/>
+        <filmModels:Episode Number="3" Checked="True"/>
+        <filmModels:Episode Number="4" Checked="False"/>
+        <filmModels:Episode Number="5" Checked="True"/>
+    </viewModels:ViewingsSettingsViewModel.Episodes>
+    <viewModels:ViewingsSettingsViewModel.SelectedEpisode>
+        <filmModels:Episode Number="1" Checked="True"/>
+    </viewModels:ViewingsSettingsViewModel.SelectedEpisode>
+
+    <viewModels:ViewingsSettingsViewModel.AddressInfoList>
+        <filmModels:AddressInfo Name="AddressInfo 1"/>
+        <filmModels:AddressInfo Name="AddressInfo 2"/>
+        <filmModels:AddressInfo Name="AddressInfo 3"/>
+    </viewModels:ViewingsSettingsViewModel.AddressInfoList>
     
 </viewModels:ViewingsSettingsViewModel>

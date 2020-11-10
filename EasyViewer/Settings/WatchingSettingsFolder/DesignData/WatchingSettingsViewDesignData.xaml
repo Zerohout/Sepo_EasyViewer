@@ -10,7 +10,7 @@
             DefaultEpCount="10"
             LastWatchedEpInRow="901"
             NightHelperEndTime="4"
-            NightHelperShutdown="False"
+            NightHelperShutdown="True"
             NightHelperStartTime="23"
             RandomMixCount="3"
             RandomWatching="True"

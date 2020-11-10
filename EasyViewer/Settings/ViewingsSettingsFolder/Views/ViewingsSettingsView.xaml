@@ -14,12 +14,13 @@
     xmlns:objectModel="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
     xmlns:sys="clr-namespace:System;assembly=System"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:helpers="clr-namespace:EasyViewer.Helpers"
     cal:Bind.AtDesignTime="True"
     d:DataContext="{d:DesignData Source=../DesignData/ViewingSettingsViewDesignData.xaml}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="True"
-    cal:Message.Attach="[Event KeyDown]=[Action KeyDown($eventArgs)]"
     mc:Ignorable="d">
 
     <Grid>
@@ -68,7 +69,6 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="5,2.5,2.5,2.5"
-                cal:Message.Attach="[Event SelectionChanged]=[Action FilmSelectionChanged()]"
                 ItemsSource="{Binding Films}"
                 SelectedItem="{Binding SelectedFilm}">
                 <ComboBox.ItemTemplate>
@@ -113,18 +113,28 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="2.5"
-                cal:Message.Attach="[Event SelectionChanged]=[Action SeasonSelectionChanged($source)]"
                 ItemsSource="{Binding Seasons}"
                 SelectedItem="{Binding SelectedSeason}">
                 <ListBox.ItemTemplate>
-                    <ItemContainerTemplate DataType="{x:Type ListBoxItem}" x:Name="SeasonItem">
+                    <DataTemplate>
                         <DockPanel Margin="0,7">
                             <ToggleButton
                                 Margin="0,0,10,0"
                                 VerticalAlignment="Center"
-                                cal:Message.Attach="[Checked] = [Action SeasonCheckValidation()];[Unchecked] = [Action SeasonCheckValidation()]"
                                 IsChecked="{Binding Checked, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource MMFilmListTButtonStyle}">
+                                <i:Interaction.Triggers>
+                                    <helpers:RoutedEventTrigger RoutedEvent="ToggleButton.Checked">
+                                        <cal:ActionMessage MethodName="SeasonCheckValidation">
+                                            <cal:Parameter Value="{Binding}"/>
+                                        </cal:ActionMessage>
+                                    </helpers:RoutedEventTrigger>
+                                    <helpers:RoutedEventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                        <cal:ActionMessage MethodName="SeasonCheckValidation">
+                                            <cal:Parameter Value="{Binding}"/>
+                                        </cal:ActionMessage>
+                                    </helpers:RoutedEventTrigger>
+                                </i:Interaction.Triggers>
                                 <iconPacks:PackIconMaterial
                                     x:Name="ToggleButton"
                                     Width="20"
@@ -136,9 +146,9 @@
                                 FontFamily="Comic Sans MS"
                                 FontSize="20"
                                 FontWeight="Bold"
-                                Text="{Binding NumberName}" />
+                                Text="{Binding Name}" />
                         </DockPanel>
-                        <ItemContainerTemplate.Triggers>
+                        <DataTemplate.Triggers>
                             <DataTrigger
                                Binding="{Binding Checked}"
                                 Value="True">
@@ -154,45 +164,10 @@
                                 <Setter TargetName="SeasonName" Property="Foreground" Value="Tomato" />
                             </DataTrigger>
                             
-                        </ItemContainerTemplate.Triggers>
-                    </ItemContainerTemplate>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <!--<StackPanel
-                Grid.Row="1"
-                Grid.Column="1"
-                Orientation="Vertical">
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action CheckSelectedSeason()]"
-                    ToolTip="Редактировать выбранную озвучку">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListCheckActionBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action UncheckSelectedSeason()]"
-                    ToolTip="Удалить выбранную озвучку из всех списков">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListUncheckActionBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action EditSelectedSeason()]"
-                    ToolTip="Редактировать выбранную озвучку">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListEditBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action CancelSeasonSelection()]"
-                    ToolTip="Снять выделение">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListCancelBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action SaveSeasonChanges()]"
-                    ToolTip="Копировать озвучку в выбранный м/ф">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListSaveActionBtnIconStyle}" />
-                </Button>
-            </StackPanel>-->
         </Grid>
 
         <Grid
@@ -223,7 +198,6 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="2.5"
-                cal:Message.Attach="[Event SelectionChanged]=[Action EpisodeSelectionChanged($source)]"
                 ItemsSource="{Binding Episodes}"
                 SelectedItem="{Binding SelectedEpisode}">
                 <ListBox.ItemTemplate>
@@ -232,9 +206,20 @@
                             <ToggleButton
                                 Margin="0,0,10,0"
                                 VerticalAlignment="Center"
-                                cal:Message.Attach="[Checked] = [Action EpisodeCheckValidation()];[Unchecked] = [Action EpisodeCheckValidation()]"
                                 IsChecked="{Binding Checked, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource MMFilmListTButtonStyle}">
+                                <i:Interaction.Triggers>
+                                    <helpers:RoutedEventTrigger RoutedEvent="ToggleButton.Checked">
+                                        <cal:ActionMessage MethodName="EpisodeCheckValidation">
+                                            <cal:Parameter Value="{Binding}"/>
+                                        </cal:ActionMessage>
+                                    </helpers:RoutedEventTrigger>
+                                    <helpers:RoutedEventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                        <cal:ActionMessage MethodName="EpisodeCheckValidation">
+                                            <cal:Parameter Value="{Binding}"/>
+                                        </cal:ActionMessage>
+                                    </helpers:RoutedEventTrigger>
+                                </i:Interaction.Triggers>
                                 <iconPacks:PackIconMaterial
                                     x:Name="ToggleButton"
                                     Width="20"
@@ -267,41 +252,6 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <!--<StackPanel
-                Grid.Row="1"
-                Grid.Column="1"
-                Orientation="Vertical">
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action CheckSelectedEpisode()]"
-                    ToolTip="Добавить текущий эпизод в список просматриваемых">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListCheckActionBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action UncheckSelectedEpisode()]"
-                    ToolTip="Удалить текущий эпизод из списка просматриваемых">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListUncheckActionBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action EditSelectedEpisode()]"
-                    ToolTip="Редактировать выбранную озвучку">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListEditBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action CancelEpisodeSelection()]"
-                    ToolTip="Снять выделение">
-                    <iconPacks:PackIconMaterial Style="{StaticResource EditListCancelBtnIconStyle}" />
-                </Button>
-                <Button
-                    Margin="0,2.5"
-                    cal:Message.Attach="[Event Click]=[Action SaveEpisodeChanges()]"
-                    ToolTip="Копировать озвучку в выбранный м/ф">
-                    <iconPacks:PackIconFontAwesome Style="{StaticResource EditListSaveActionBtnIconStyle}" />
-                </Button>
-            </StackPanel>-->
         </Grid>
 
         <Grid
@@ -318,7 +268,7 @@
             <TextBlock
                 Grid.ColumnSpan="2"
                 Style="{StaticResource SEDefaultTBlockStyle}"
-                Text="Список озвучек" />
+                Text="Список Адресов" />
             <Button Grid.Column="0"
                     Grid.Row="0"
                 HorizontalAlignment="Right"
@@ -331,20 +281,30 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="2.5"
-                cal:Message.Attach="[Event SelectionChanged]=[Action VoiceOverSelectionChanged($source)]"
-                ItemsSource="{Binding VoiceOvers}"
-                SelectedItem="{Binding SelectedVoiceOver}">
+                ItemsSource="{Binding AddressInfoList}"
+                SelectedItem="{Binding SelectedAddressInfo}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <DockPanel Margin="0,7">
                             <RadioButton
                                 Margin="0,0,10,0"
                                 VerticalAlignment="Center"
-                                cal:Message.Attach="[Checked] = [Action VoiceOverCheck()];[Unchecked] = [Action VoiceOverUncheck()]"
                                 GroupName="VoiceOvers"
-                                IsChecked="{Binding Checked, UpdateSourceTrigger=PropertyChanged}"
+                                IsChecked="{Binding Checked, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Style="{StaticResource MMFilmListTButtonStyle}">
-                                <iconPacks:PackIconMaterial
+                                <i:Interaction.Triggers>
+                                    <helpers:RoutedEventTrigger RoutedEvent="RadioButton.Checked">
+                                        <cal:ActionMessage MethodName="AddressInfoCheck">
+                                            <cal:Parameter Value="{Binding}"/>
+                                        </cal:ActionMessage>
+                                    </helpers:RoutedEventTrigger>
+                                    <helpers:RoutedEventTrigger RoutedEvent="RadioButton.Unchecked">
+                                        <cal:ActionMessage MethodName="AddressInfoUncheck">
+                                            <cal:Parameter Value="{Binding}"/>
+                                        </cal:ActionMessage>
+                                    </helpers:RoutedEventTrigger>
+                                </i:Interaction.Triggers>
+                                <iconPacks:PackIconFontAwesome
                                     x:Name="RadioButton"
                                     Width="20"
                                     Height="20" />
@@ -361,14 +321,14 @@
                             <DataTrigger
                                 Binding="{Binding Checked}"
                                 Value="True">
-                                <Setter TargetName="RadioButton" Property="Kind" Value="VolumeHigh" />
+                                <Setter TargetName="RadioButton" Property="Kind" Value="LinkSolid" />
                                 <Setter TargetName="RadioButton" Property="Foreground" Value="LawnGreen" />
                                 <Setter TargetName="VoiceOverName" Property="Foreground" Value="LawnGreen" />
                             </DataTrigger>
                             <DataTrigger
                                 Binding="{Binding Checked}"
                                 Value="False">
-                                <Setter TargetName="RadioButton" Property="Kind" Value="VolumeOff" />
+                                <Setter TargetName="RadioButton" Property="Kind" Value="UnLinkSolid" />
                                 <Setter TargetName="RadioButton" Property="Foreground" Value="Tomato" />
                                 <Setter TargetName="VoiceOverName" Property="Foreground" Value="Tomato" />
                             </DataTrigger>

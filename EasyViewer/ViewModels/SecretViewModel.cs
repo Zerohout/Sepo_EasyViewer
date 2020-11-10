@@ -7,6 +7,12 @@
 
     public partial class SecretViewModel : Screen
     {
+        protected override void OnInitialize()
+        {
+            base.OnInitialize();
+            pb = new PasswordBox();
+        }
+
         public void Accept()
         {
             if (GetHash(pass) == "0E87C1DC8B10CF2989AC77169E1C961B")
@@ -27,7 +33,7 @@
         private string pass;
         private int step = 2;
 
-        private PasswordBox pb = new PasswordBox();
+        private PasswordBox pb;
 
         public void PasswordChanged(PasswordBox sender, RoutedEventArgs args)
         {
